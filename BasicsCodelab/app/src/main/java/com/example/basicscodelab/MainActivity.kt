@@ -24,6 +24,8 @@ import com.example.basicscodelab.ui.theme.BasicsCodelabTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -56,24 +58,31 @@ fun MyApp(
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+    val expanded = remember { mutableStateOf(false) }
+    val extraPadding = if (expanded.value) 48.dp else 0.dp
+
     Surface(
         color = MaterialTheme.colorScheme.primary,
         modifier = modifier.padding(vertical = 3.dp, horizontal = 3.dp)
     ) {
         Row(
             modifier = Modifier
+                .border(1.dp, Color.Black)
                 .fillMaxWidth()
-                .padding(5.dp),
+                .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-            Column {
+            Column(
+                modifier = Modifier
+                    .weight(1f)                 // ocupa el espacio disponible
+                    .padding(bottom = extraPadding)
+            ) {
                 Text(text = "Hello")
                 Text(text = name)
             }
 
-            ElevatedButton(onClick = { }) {
-                Text("Show more")
+            ElevatedButton(onClick = { expanded.value = !expanded.value }) {
+                Text(if (expanded.value) "Show less" else "Show more")
             }
         }
     }
