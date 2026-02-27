@@ -1,5 +1,6 @@
 package com.example.miniactv2
 
+import android.R.attr.text
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,8 +59,19 @@ fun MyApp() {
             )
 
             Pib(
-                modifier = Modifier
+                modifier = Modifier,
             )
+
+            Button(
+                onClick = { },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 25.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.calcul_pib)
+                )
+            }
         }
     }
 }
@@ -78,8 +91,10 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun Pib(modifier: Modifier = Modifier) {
     Text(
         text = stringResource(R.string.pib_original),
+        fontWeight = FontWeight.Bold,
         modifier = Modifier
             .padding(top = 30.dp)
+
     )
 }
 
