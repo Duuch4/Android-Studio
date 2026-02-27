@@ -1,5 +1,6 @@
 package com.example.miniactv2
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -53,9 +54,13 @@ fun MyApp() {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+    val orientation =
+        if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            stringResource(R.string.landscape) else stringResource(R.string.portrait)
     Text(
-        text = stringResource(R.string.hello, name),
+        text = stringResource(R.string.hello , orientation),
         modifier = modifier
+
     )
 }
 
