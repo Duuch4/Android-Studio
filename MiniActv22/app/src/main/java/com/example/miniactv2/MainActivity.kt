@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.miniactv2.ui.theme.MiniActv2Theme
 
@@ -29,7 +30,7 @@ class MainActivity : ComponentActivity() {
 fun MyApp() {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Greeting(
-            name = "Android",
+            name = stringResource(R.string.android_name),
             modifier = Modifier.padding(innerPadding)
         )
     }
@@ -38,7 +39,7 @@ fun MyApp() {
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $name!",
+        text = stringResource(R.string.hello, name),
         modifier = modifier
     )
 }
