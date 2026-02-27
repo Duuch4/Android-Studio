@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Preview(showBackground = true)
 @Composable
 fun MyApp() {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

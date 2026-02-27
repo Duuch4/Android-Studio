@@ -2,4 +2,5 @@
     <string name="app_name">MiniActv2</string>
     <string name="hello">Hola %1$s</string>
     <string name="android_name">Android</string>
+    <string name="current_language">Idioma actual: %1$s</string>
 </resources>
