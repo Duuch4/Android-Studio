@@ -8,13 +8,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.miniactv2.ui.theme.MiniActv2Theme
 import java.util.Locale
 
@@ -38,15 +41,17 @@ fun MyApp() {
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .fillMaxSize()
         ) {
             Text(
                 text = stringResource(R.string.current_language, currentLanguage)
             )
 
             Greeting(
-                name = stringResource(R.string.android_name),
+                name = stringResource(id = R.string.android_name),
                 modifier = Modifier
-                    .padding(innerPadding)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 25.dp)
             )
         }
     }
@@ -60,7 +65,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
         text = stringResource(R.string.hello , orientation),
         modifier = modifier
-
     )
 }
 
