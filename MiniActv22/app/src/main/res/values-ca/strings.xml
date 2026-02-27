@@ -5,4 +5,5 @@
     <string name="current_language">Llengua actual: %1$s</string>
     <string name="portrait">portrait</string>
     <string name="landscape">landscape</string>
+    <string name="pib_original">El producte interior brut es:</string>
 </resources>

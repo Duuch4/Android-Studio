@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.miniactv2.ui.theme.MiniActv2Theme
 import java.util.Locale
+import androidx.compose.ui.text.font.FontWeight
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +45,8 @@ fun MyApp() {
                 .fillMaxSize()
         ) {
             Text(
-                text = stringResource(R.string.current_language, currentLanguage)
+                text = stringResource(R.string.current_language, currentLanguage),
+                fontWeight = FontWeight.Bold
             )
 
             Greeting(
@@ -52,6 +54,10 @@ fun MyApp() {
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(top = 25.dp)
+            )
+
+            Pib(
+                modifier = Modifier
             )
         }
     }
@@ -68,6 +74,15 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
+@Composable
+fun Pib(modifier: Modifier = Modifier) {
+    Text(
+        text = stringResource(R.string.pib_original),
+        modifier = Modifier
+            .padding(top = 30.dp)
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
@@ -75,3 +90,4 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
