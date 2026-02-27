@@ -19,14 +19,19 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MiniActv2Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MyApp()
             }
         }
+    }
+}
+
+@Composable
+fun MyApp() {
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        Greeting(
+            name = "Android",
+            modifier = Modifier.padding(innerPadding)
+        )
     }
 }
 
