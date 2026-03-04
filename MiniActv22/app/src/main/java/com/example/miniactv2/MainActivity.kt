@@ -70,7 +70,13 @@ fun MyApp() {
             )
 
             Button(
-                onClick = { },
+                onClick = {
+                    if (currentLanguage == "ca"){
+                        pibActual = pibActual * 1.5
+                    }else{
+                        pibActual = pibActual * 2
+                    }
+                },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(top = 25.dp)
