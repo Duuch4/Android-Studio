@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -51,8 +52,73 @@ fun MyApp() {
     val pibOriginal = 1000000000.00
     var pibActual by remember { mutableDoubleStateOf(1000000000.0) }
     val imageRes = if (currentLanguage == "ca") R.drawable.cagatio else R.drawable.tortilla
+    val currentconfiguration = LocalConfiguration.current
+    val isLandscape = currentconfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+
+        if (isLandscape) {
+
+            Row(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                ) {
+                    Text(
+                        text = stringResource(R.string.current_language, currentLanguage),
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Greeting(
+                        name = stringResource(id = R.string.android_name),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 25.dp)
+                    )
+
+                    Pib(
+                        modifier = Modifier,
+                    )
+
+                    Button(
+                        onClick = {
+                            pibActual = if (currentLanguage == "ca"){
+                                pibOriginal * 1.5
+                            }else{
+                                pibOriginal * 1.2
+                            }
+                        },
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 25.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.calcul_pib)
+                        )
+                    }
+
+                    PibResult(
+                        pib = pibActual
+                    )
+
+                    Image(
+                        painter = painterResource(id = imageRes),
+                        contentDescription = "country image",
+                        modifier = Modifier
+                            .size(300.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 20.dp)
+                    )
+                }
+            }
+
+        }else{
+
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -104,7 +170,7 @@ fun MyApp() {
                     .padding(top = 20.dp)
             )
         }
-    }
+    }}
 }
 
 @Composable
