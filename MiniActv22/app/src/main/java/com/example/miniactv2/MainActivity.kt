@@ -47,6 +47,7 @@ fun MyApp() {
     val currentLanguage = Locale.getDefault().language
     val pibOriginal = 1000000000.00
     var pibActual by remember { mutableDoubleStateOf(1000000000.0) }
+    val imageRes = if (currentLanguage == "ca") R.drawable.cagatio else R.drawable.tortilla
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
