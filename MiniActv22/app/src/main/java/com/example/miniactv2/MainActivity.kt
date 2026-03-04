@@ -45,6 +45,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val currentLanguage = Locale.getDefault().language
+    val pibOriginal = 1000000000.00
     var pibActual by remember { mutableDoubleStateOf(1000000000.0) }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -71,10 +72,10 @@ fun MyApp() {
 
             Button(
                 onClick = {
-                    if (currentLanguage == "ca"){
-                        pibActual = pibActual * 1.5
+                    pibActual = if (currentLanguage == "ca"){
+                        pibOriginal * 1.5
                     }else{
-                        pibActual = pibActual * 2
+                        pibOriginal * 1.2
                     }
                 },
                 modifier = Modifier
