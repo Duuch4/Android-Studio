@@ -14,6 +14,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -40,6 +45,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val currentLanguage = Locale.getDefault().language
+    var pibActual by remember { mutableDoubleStateOf(1000000000.0) }
+
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
             modifier = Modifier
@@ -74,7 +81,7 @@ fun MyApp() {
             }
 
             PibResult(
-                pib = 1000000000.00
+                PibResult(pib = pibActual)
             )
         }
     }
