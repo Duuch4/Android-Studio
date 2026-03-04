@@ -74,7 +74,7 @@ fun MyApp() {
             }
 
             PibResult(
-                modifier = Modifier,
+                pib = 1000000000.00
             )
         }
     }
@@ -103,9 +103,9 @@ fun Pib(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun PibResult(modifier: Modifier = Modifier) {
+fun PibResult(pib: Double, modifier: Modifier = Modifier) {
     Text(
-        text = stringResource(R.string.pib_result),
+        text = stringResource(R.string.pib_result , pib),
         modifier = Modifier
             .padding(top = 30.dp)
 
