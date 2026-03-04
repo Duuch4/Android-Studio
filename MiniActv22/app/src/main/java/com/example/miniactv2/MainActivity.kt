@@ -7,8 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -64,10 +66,12 @@ fun MyApp() {
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
+
                 Column(
                     modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(end = 20.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.current_language, currentLanguage),
@@ -81,40 +85,30 @@ fun MyApp() {
                             .padding(top = 25.dp)
                     )
 
-                    Pib(
-                        modifier = Modifier,
-                    )
+                    Pib()
 
                     Button(
                         onClick = {
-                            pibActual = if (currentLanguage == "ca"){
-                                pibOriginal * 1.5
-                            }else{
-                                pibOriginal * 1.2
-                            }
+                            pibActual = if (currentLanguage == "ca") pibOriginal * 1.5 else pibOriginal * 1.2
                         },
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(top = 25.dp)
                     ) {
-                        Text(
-                            text = stringResource(R.string.calcul_pib)
-                        )
+                        Text(text = stringResource(R.string.calcul_pib))
                     }
 
-                    PibResult(
-                        pib = pibActual
-                    )
-
-                    Image(
-                        painter = painterResource(id = imageRes),
-                        contentDescription = "country image",
-                        modifier = Modifier
-                            .size(300.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .padding(top = 20.dp)
-                    )
+                    PibResult(pib = pibActual)
                 }
+
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = null, // No aporta res
+                    modifier = Modifier
+                        .weight(1f)
+                        .size(260.dp)
+                        .align(Alignment.CenterVertically)
+                )
             }
 
         }else{
