@@ -72,6 +72,10 @@ fun MyApp() {
                     text = stringResource(R.string.calcul_pib)
                 )
             }
+
+            PibResult(
+                modifier = Modifier,
+            )
         }
     }
 }
