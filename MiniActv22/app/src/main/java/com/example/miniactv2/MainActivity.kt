@@ -87,7 +87,7 @@ fun MyApp() {
             }
 
             PibResult(
-                PibResult(pib = pibActual)
+                pib = pibActual
             )
         }
     }
