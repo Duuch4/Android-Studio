@@ -102,6 +102,16 @@ fun Pib(modifier: Modifier = Modifier) {
     )
 }
 
+@Composable
+fun PibResult(modifier: Modifier = Modifier) {
+    Text(
+        text = stringResource(R.string.pib_result),
+        modifier = Modifier
+            .padding(top = 30.dp)
+
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
