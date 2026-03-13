@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MiniActv3</string>
+    <string name="hello_world">Hello World!</string>
+    <string name="bye_message">Introduce the Bye Message:</string>
+    <string name="bye_message_2">Enter text for the Bye greeting here</string>
+    <string name="repetitions">Introduce the number of repetitions:</string>
+    <string name="repetitions_2">Enter number of repetitions here</string>
+    <string name="bye_screen">Go to bye screen</string>
+    <string name="title_activity_main2">MainActivity2</string>
+</resources>
