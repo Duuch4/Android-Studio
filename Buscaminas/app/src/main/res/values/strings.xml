@@ -2,6 +2,8 @@
     <string name="app_name">Buscaminas</string>
     <string name="menu_principal">Menú principal</string>
     <string name="boton_ayuda">Ayuda</string>
+    <string name="header_ayuda">Ayuda</string>
     <string name="boton_empezar">Empezar partida</string>
     <string name="boton_salir">Salir</string>
+    <string name="icono_header">Icono del menú principal</string>
 </resources>
