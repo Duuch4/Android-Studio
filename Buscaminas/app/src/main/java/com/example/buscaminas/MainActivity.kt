@@ -19,6 +19,10 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -45,14 +49,28 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MyApp() {
+
+    var pantallaActual by remember { mutableStateOf("Principal") }
+
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Principal(
-            modifier = Modifier.padding(innerPadding)
-        )
+
+        when(pantallaActual){
+
+            "Principal" -> Principal(
+                modifier = Modifier.padding(innerPadding),
+                onIrAyuda = { pantallaActual = "ayuda" }
+            )
+
+            "Ayuda" -> Ayuda(
+                modifier = Modifier.padding(innerPadding),
+                onVolver = { pantallaActual = "principal" }
+            )
+
+        }
     }
 }
 @Composable
-fun Principal(modifier: Modifier = Modifier) {
+fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit) {
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -69,7 +87,7 @@ fun Principal(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.Center
         ) {
 
-            Button(onClick = { }) {
+            Button(onClick = onIrAyuda) {
                 Text(text = stringResource(id = R.string.boton_ayuda))
             }
 
@@ -97,7 +115,7 @@ fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
         )
 
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -151,7 +169,7 @@ fun Header(titulo: String, icono: Int) {
 @Composable
 fun PrincipalPreview() {
     BuscaminasTheme {
-        Principal()
+        Principal(onIrAyuda = {})
     }
 }
 
