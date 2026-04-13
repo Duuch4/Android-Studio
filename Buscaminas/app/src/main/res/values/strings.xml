@@ -6,4 +6,13 @@
     <string name="boton_empezar">Empezar partida</string>
     <string name="boton_salir">Salir</string>
     <string name="icono_header">Icono del menú principal</string>
+    <string name="on_volver">Volver</string>
+    <string name="text_ayuda">Bienvenido al juego del BUSCA MINAS !</string>
+    <string name="text_ayuda1">El juego consiste en despejar todas las casillas de una parrilla que no oculten una mina algunas casillas tienen un número.</string>
+    <string name="text_ayuda2">Este número indica las minas que hay en las casillas circundantes así, si una casilla tiene el número 3, significa que de las ocho casillas que hay alrededor (si no es una esquina o borde) hay 3 con minas y 5 sin minas.</string>
+    <string name="text_ayuda4">Si se descubre una casilla con una mina, SE PIERDE la partida.</string>
+    <string name="text_ayuda5">En otro caso, si descubres todas las casillas sin mina, GANAS!!</string>
+    <string name="text_ayuda6">Puedes configurar el número de filas de la parrilla, el porcentaje de minas y si quieres establecer un tiempo máximo para completar el juego.</string>
+    <string name="ph_buscaminas">Ejemplo del buscaminas</string>
+
 </resources>

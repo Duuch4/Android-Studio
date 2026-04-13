@@ -1,6 +1,5 @@
 package com.example.buscaminas
 
-import android.R.id.bold
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -58,12 +57,12 @@ fun MyApp() {
 
             "Principal" -> Principal(
                 modifier = Modifier.padding(innerPadding),
-                onIrAyuda = { pantallaActual = "ayuda" }
+                onIrAyuda = { pantallaActual = "Ayuda" }
             )
 
             "Ayuda" -> Ayuda(
                 modifier = Modifier.padding(innerPadding),
-                onVolver = { pantallaActual = "principal" }
+                onVolver = { pantallaActual = "Principal" }
             )
 
         }
@@ -107,23 +106,45 @@ fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
 
     Column(
         modifier = modifier.fillMaxSize()
+
     ) {
 
         Header(
             titulo = stringResource(id = R.string.header_ayuda),
-            icono = R.drawable.icono_mina
+            icono = R.drawable.ayudalogo
         )
 
         Column(
-            modifier = Modifier.fillMaxWidth().fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(15.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
         ) {
 
-            Text("ASDASd")
+            Text(text = stringResource(id = R.string.text_ayuda),
+            fontWeight = FontWeight.Bold)
+
+            Text(text = stringResource(id = R.string.text_ayuda1))
+
+            Text(text = stringResource(id = R.string.text_ayuda2))
+
+            Text(text = stringResource(id = R.string.text_ayuda4),)
+
+            Text(text = stringResource(id = R.string.text_ayuda5),)
+
+            Text(text = stringResource(id = R.string.text_ayuda6))
+
+            Image(
+                painter = painterResource(id = R.drawable.buscaminas),
+                contentDescription = stringResource(id = R.string.ph_buscaminas),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp)
+                    .padding(bottom = 40.dp)
+            )
 
             Button(onClick = onVolver) {
-                Text("Volver")
+                Text(stringResource(id = R.string.on_volver))
             }
         }
     }
@@ -150,7 +171,7 @@ fun Header(titulo: String, icono: Int) {
         Image(
             painter = painterResource(id = icono),
             contentDescription = stringResource(id = R.string.icono_header),
-            modifier = Modifier.size(35.dp)
+            modifier = Modifier.size(45.dp)
         )
 
         Text(
