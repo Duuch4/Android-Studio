@@ -161,10 +161,10 @@ fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
 @Composable
 fun Configuracion(modifier: Modifier = Modifier, onEmpezar: () -> Unit) {
 
-    var alias by remember { mutableStateOf("") }
-    var medida by remember { mutableIntStateOf(7) }
-    var tiempoActivado by remember { mutableStateOf(false) }
-    var porcentajeMinas by remember { mutableIntStateOf(25) }
+    var alias by rememberSaveable { mutableStateOf("") }
+    var medida by rememberSaveable { mutableIntStateOf(7) }
+    var tiempoActivado by rememberSaveable { mutableStateOf(false) }
+    var porcentajeMinas by rememberSaveable { mutableIntStateOf(25) }
 
     Column(
         modifier = modifier.fillMaxSize()

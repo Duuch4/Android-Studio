@@ -17,7 +17,7 @@
     <string name="header_config">Configuración</string>
     <string name="boton_empezar2">Empezar</string>
     <string name="label_alias">Alias identificativo</string>
-    <string name="graella">Mida graella</string>
+    <string name="graella">Medida parrilla</string>
     <string name="control_tiempo">Control del tiempo</string>
     <string name="porc_minas">% de minas</string>
 
