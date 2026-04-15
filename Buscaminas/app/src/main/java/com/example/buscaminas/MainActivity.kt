@@ -9,12 +9,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -152,7 +158,12 @@ fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
 }
 
 @Composable
-fun Configuracion(modifier: Modifier = Modifier,onEmpezar: () -> Unit) {
+fun Configuracion(modifier: Modifier = Modifier, onEmpezar: () -> Unit) {
+
+    var alias by remember { mutableStateOf("") }
+    var tamaño by remember { mutableStateOf(7) }
+    var tiempoActivado by remember { mutableStateOf(false) }
+    var porcentajeMinas by remember { mutableStateOf(25) }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -164,15 +175,114 @@ fun Configuracion(modifier: Modifier = Modifier,onEmpezar: () -> Unit) {
         )
 
         Column(
-            modifier = modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(15.dp)
         ) {
 
-            Button(onClick = onEmpezar) {
-                Text(text = stringResource(id = R.string.boton_empezar2))
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = R.drawable.alias),
+                    contentDescription = null,
+                    modifier = Modifier.size(25.dp)
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(stringResource(id = R.string.label_alias))
             }
 
+            Spacer(modifier = Modifier.height(4.dp))
+
+            OutlinedTextField(
+                value = alias,
+                onValueChange = { alias = it },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = R.drawable.graella),
+                    contentDescription = null,
+                    modifier = Modifier.size(25.dp)
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(stringResource(id = R.string.graella))
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                listOf(7, 6, 5).forEach { value ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(end = 10.dp)
+                    ) {
+                        RadioButton(
+                            selected = tamaño == value,
+                            onClick = { tamaño = value }
+                        )
+                        Text(text = value.toString())
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Column {
+                Text(stringResource(id = R.string.control_tiempo))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.tiempo),
+                        contentDescription = null,
+                        modifier = Modifier.size(30.dp)
+                    )
+
+                    Checkbox(
+                        checked = tiempoActivado,
+                        onCheckedChange = { tiempoActivado = it }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = R.drawable.icono_mina),
+                    contentDescription = null,
+                    modifier = Modifier.size(25.dp)
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(stringResource(id = R.string.porc_minas))
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                listOf(15, 25, 35).forEach { value ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(end = 10.dp)
+                    ) {
+                        RadioButton(
+                            selected = porcentajeMinas == value,
+                            onClick = { porcentajeMinas = value }
+                        )
+                        Text(text = value.toString())
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Button(
+                onClick = onEmpezar,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(text = stringResource(id = R.string.boton_empezar2))
+            }
         }
     }
 }
