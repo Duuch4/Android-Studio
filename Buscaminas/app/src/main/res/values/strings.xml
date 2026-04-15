@@ -14,5 +14,7 @@
     <string name="text_ayuda5">En otro caso, si descubres todas las casillas sin mina, GANAS!!</string>
     <string name="text_ayuda6">Puedes configurar el número de filas de la parrilla, el porcentaje de minas y si quieres establecer un tiempo máximo para completar el juego.</string>
     <string name="ph_buscaminas">Ejemplo del buscaminas</string>
+    <string name="header_config">Configuración</string>
+    <string name="boton_empezar2">Empezar</string>
 
 </resources>

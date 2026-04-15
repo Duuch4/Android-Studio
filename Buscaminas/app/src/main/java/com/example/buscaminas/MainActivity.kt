@@ -152,6 +152,32 @@ fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
 }
 
 @Composable
+fun Configuracion(modifier: Modifier = Modifier,onEmpezar: () -> Unit) {
+
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+
+        Header(
+            titulo = stringResource(id = R.string.header_config),
+            icono = R.drawable.icono_mina
+        )
+
+        Column(
+            modifier = modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+
+            Button(onClick = onEmpezar) {
+                Text(text = stringResource(id = R.string.boton_empezar2))
+            }
+
+        }
+    }
+}
+
+@Composable
 fun Header(titulo: String, icono: Int) {
     Row(
         modifier = Modifier
@@ -200,5 +226,13 @@ fun PrincipalPreview() {
 fun AyudaPreview() {
     BuscaminasTheme {
         Ayuda(onVolver = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ConfiguracionPreview() {
+    BuscaminasTheme {
+        Configuracion(onEmpezar = {})
     }
 }
