@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -161,9 +162,9 @@ fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
 fun Configuracion(modifier: Modifier = Modifier, onEmpezar: () -> Unit) {
 
     var alias by remember { mutableStateOf("") }
-    var tamaño by remember { mutableStateOf(7) }
+    var medida by remember { mutableIntStateOf(7) }
     var tiempoActivado by remember { mutableStateOf(false) }
-    var porcentajeMinas by remember { mutableStateOf(25) }
+    var porcentajeMinas by remember { mutableIntStateOf(25) }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -219,8 +220,8 @@ fun Configuracion(modifier: Modifier = Modifier, onEmpezar: () -> Unit) {
                         modifier = Modifier.padding(end = 10.dp)
                     ) {
                         RadioButton(
-                            selected = tamaño == value,
-                            onClick = { tamaño = value }
+                            selected = medida == value,
+                            onClick = { medida = value }
                         )
                         Text(text = value.toString())
                     }
