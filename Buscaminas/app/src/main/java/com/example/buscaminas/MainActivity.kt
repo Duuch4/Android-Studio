@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,7 +64,8 @@ fun MyApp() {
 
             "Principal" -> Principal(
                 modifier = Modifier.padding(innerPadding),
-                onIrAyuda = { pantallaActual = "Ayuda" }
+                onIrAyuda = { pantallaActual = "Ayuda" },
+                onEmpezarpartida = { pantallaActual = "Configuracion" }
             )
 
             "Ayuda" -> Ayuda(
@@ -73,11 +73,16 @@ fun MyApp() {
                 onVolver = { pantallaActual = "Principal" }
             )
 
+            "Configuracion" -> Configuracion(
+                modifier = Modifier.padding(innerPadding),
+                onEmpezar = { pantallaActual = "Principal" }
+            )
+
         }
     }
 }
 @Composable
-fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit) {
+fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarpartida: () -> Unit) {
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -98,7 +103,7 @@ fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit) {
                 Text(text = stringResource(id = R.string.boton_ayuda))
             }
 
-            ElevatedButton(onClick = { }) {
+            ElevatedButton(onClick = onEmpezarpartida) {
                 Text(text = stringResource(id = R.string.boton_empezar))
             }
 
@@ -136,9 +141,9 @@ fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
 
             Text(text = stringResource(id = R.string.text_ayuda2))
 
-            Text(text = stringResource(id = R.string.text_ayuda4),)
+            Text(text = stringResource(id = R.string.text_ayuda4))
 
-            Text(text = stringResource(id = R.string.text_ayuda5),)
+            Text(text = stringResource(id = R.string.text_ayuda5))
 
             Text(text = stringResource(id = R.string.text_ayuda6))
 
@@ -328,7 +333,7 @@ fun Header(titulo: String, icono: Int) {
 @Composable
 fun PrincipalPreview() {
     BuscaminasTheme {
-        Principal(onIrAyuda = {})
+        Principal(onIrAyuda = {},onEmpezarpartida = {})
     }
 }
 
