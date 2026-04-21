@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -53,10 +54,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @Composable
 fun MyApp() {
 
     var pantallaActual by rememberSaveable { mutableStateOf("Principal") }
+    var configPartida by rememberSaveable { mutableStateOf<CfgPartida?>(null) }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
@@ -75,9 +78,20 @@ fun MyApp() {
 
             "Configuracion" -> Configuracion(
                 modifier = Modifier.padding(innerPadding),
-                onEmpezar = { pantallaActual = "Principal" }
+                onEmpezar = {
+                    configPartida = it
+                    pantallaActual = "Juego"
+                }
             )
 
+            "Juego" -> {
+                configPartida?.let { config ->
+                    Juego(
+                        modifier = Modifier.padding(innerPadding),
+                        config = config
+                    )
+                }
+            }
         }
     }
 }
@@ -163,8 +177,15 @@ fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
     }
 }
 
+data class CfgPartida(
+    val alias: String,
+    val filas: Int,
+    val columnas: Int,
+    val porcentajeMinas: Int,
+    val tiempoActivo: Boolean
+)
 @Composable
-fun Configuracion(modifier: Modifier = Modifier, onEmpezar: () -> Unit) {
+fun Configuracion(modifier: Modifier = Modifier, onEmpezar: (CfgPartida) -> Unit) {
 
     var alias by rememberSaveable { mutableStateOf("") }
     var medida by rememberSaveable { mutableIntStateOf(7) }
@@ -284,7 +305,17 @@ fun Configuracion(modifier: Modifier = Modifier, onEmpezar: () -> Unit) {
             Spacer(modifier = Modifier.height(15.dp))
 
             Button(
-                onClick = onEmpezar,
+                onClick = {
+                    onEmpezar(
+                        CfgPartida(
+                            alias = alias,
+                            filas = medida,
+                            columnas = medida,
+                            porcentajeMinas = porcentajeMinas,
+                            tiempoActivo = tiempoActivado
+                        )
+                    )
+                },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text(text = stringResource(id = R.string.boton_empezar2))
@@ -293,6 +324,80 @@ fun Configuracion(modifier: Modifier = Modifier, onEmpezar: () -> Unit) {
     }
 }
 
+@Composable
+fun Juego(
+    modifier: Modifier = Modifier,
+    config: CfgPartida
+) {
+
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+
+        Header(
+            titulo = "Partida en marcha",
+            icono = R.drawable.icono_mina
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            val totalCasillas = config.filas * config.columnas
+
+            Text(text = "$totalCasillas casillas")
+
+            if (config.tiempoActivo) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.drawable.tiempo),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(text = "10s")
+                }
+            }
+        }
+
+        Tablero(config)
+    }
+}
+
+@Composable
+fun Tablero(config: CfgPartida) {
+
+    Column(modifier = Modifier.padding(10.dp)) {
+
+        repeat(config.filas) {
+            Row {
+                repeat(config.columnas) {
+                    Casilla()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun Casilla() {
+    Box(
+        modifier = Modifier
+            .padding(2.dp)
+            .size(40.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colorResource(id = R.color.purple_700))
+        )
+    }
+}
 @Composable
 fun Header(titulo: String, icono: Int) {
     Row(
@@ -329,6 +434,7 @@ fun Header(titulo: String, icono: Int) {
 }
 
 
+
 @Preview(showBackground = true)
 @Composable
 fun PrincipalPreview() {
@@ -350,5 +456,21 @@ fun AyudaPreview() {
 fun ConfiguracionPreview() {
     BuscaminasTheme {
         Configuracion(onEmpezar = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun JuegoPreview() {
+    BuscaminasTheme {
+        Juego(
+            config = CfgPartida(
+                alias = "Albert",
+                filas = 5,
+                columnas = 5,
+                porcentajeMinas = 25,
+                tiempoActivo = true
+            )
+        )
     }
 }
