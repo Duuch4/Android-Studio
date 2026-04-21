@@ -328,9 +328,9 @@ fun Configuracion(modifier: Modifier = Modifier, onEmpezar: (CfgPartida) -> Unit
 @Composable
 fun Juego(modifier: Modifier = Modifier, config: CfgPartida) {
 
-    val tablero = remember {
+    val tablero = remember(config) {
         List(config.filas) {
-            List(config.columnas) {
+            MutableList(config.columnas) {
                 CasillaEstado()
             }
         }
