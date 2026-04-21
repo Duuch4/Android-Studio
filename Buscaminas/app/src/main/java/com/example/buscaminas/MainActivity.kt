@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -419,6 +420,100 @@ fun Casilla(estado: CasillaEstado) {
 }
 
 @Composable
+fun Resultados(modifier: Modifier = Modifier) {
+
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+
+        Header(
+            titulo = "Resultados",
+            icono = R.drawable.icono_mina
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(15.dp)
+        ) {
+
+            Text(
+                text = "RESULTADOS PARTIDA",
+                fontWeight = FontWeight.Bold,
+                fontSize = 15.sp
+            )
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Text("Día y hora")
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(colorResource(id = android.R.color.white))
+                    .border(1.dp, colorResource(id = android.R.color.black))
+                    .padding(10.dp)
+            ) {
+                Text("")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text("Valores del Log")
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(colorResource(id = android.R.color.white))
+                    .border(1.dp, colorResource(id = android.R.color.black))
+                    .padding(10.dp)
+            ) {
+                Text("")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text("E-mail destinatario")
+
+            OutlinedTextField(
+                value = "",
+                onValueChange = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, colorResource(id = android.R.color.black))
+            )
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Button(
+                onClick = {},
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Enviar e-mail")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = {},
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Nueva partida")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = {},
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Salir")
+            }
+        }
+    }
+}
+
+@Composable
 fun Header(titulo: String, icono: Int) {
     Row(
         modifier = Modifier
@@ -492,5 +587,13 @@ fun JuegoPreview() {
                 tiempoActivo = true
             )
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ResultadosPreview() {
+    BuscaminasTheme {
+        Resultados()
     }
 }
