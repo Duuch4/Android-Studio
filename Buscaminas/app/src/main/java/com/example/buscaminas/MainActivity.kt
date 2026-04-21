@@ -358,7 +358,7 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida) {
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Text(text = "$casillasRestantes casillas")
+            Text(text = stringResource(R.string.casillas_restantes, casillasRestantes))
 
             if (config.tiempoActivo) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
