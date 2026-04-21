@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -323,12 +325,21 @@ fun Configuracion(modifier: Modifier = Modifier, onEmpezar: (CfgPartida) -> Unit
         }
     }
 }
-
 @Composable
-fun Juego(
-    modifier: Modifier = Modifier,
-    config: CfgPartida
-) {
+fun Juego(modifier: Modifier = Modifier, config: CfgPartida) {
+
+    val tablero = remember {
+        List(config.filas) {
+            List(config.columnas) {
+                CasillaEstado()
+            }
+        }
+    }
+
+    val casillasDescubiertas = tablero.flatten().count { it.descubierta }
+
+    val totalCasillas = config.filas * config.columnas
+    val casillasRestantes = totalCasillas - casillasDescubiertas
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -347,9 +358,7 @@ fun Juego(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            val totalCasillas = config.filas * config.columnas
-
-            Text(text = "$totalCasillas casillas")
+            Text(text = "$casillasRestantes casillas")
 
             if (config.tiempoActivo) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -364,19 +373,23 @@ fun Juego(
             }
         }
 
-        Tablero(config)
+        Tablero(tablero)
     }
+}
+class CasillaEstado {
+    var descubierta by mutableStateOf(false)
+    var esMina by mutableStateOf(false)
 }
 
 @Composable
-fun Tablero(config: CfgPartida) {
+fun Tablero(tablero: List<List<CasillaEstado>>) {
 
     Column(modifier = Modifier.padding(10.dp)) {
 
-        repeat(config.filas) {
+        tablero.forEach { fila ->
             Row {
-                repeat(config.columnas) {
-                    Casilla()
+                fila.forEach { casilla ->
+                    Casilla(casilla)
                 }
             }
         }
@@ -384,20 +397,27 @@ fun Tablero(config: CfgPartida) {
 }
 
 @Composable
-fun Casilla() {
+fun Casilla(estado: CasillaEstado) {
+
     Box(
         modifier = Modifier
             .padding(2.dp)
-            .size(40.dp),
+            .size(50.dp)
+            .background(
+                if (estado.descubierta)
+                    colorResource(id = R.color.white)
+                else
+                    colorResource(id = R.color.purple_700)
+            )
+            .clickable(enabled = !estado.descubierta) {
+                estado.descubierta = true
+            },
         contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(colorResource(id = R.color.purple_700))
-        )
+
     }
 }
+
 @Composable
 fun Header(titulo: String, icono: Int) {
     Row(
