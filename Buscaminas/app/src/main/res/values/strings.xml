@@ -22,6 +22,7 @@
     <string name="porc_minas">% de minas</string>
     <string name="casillas_restantes">%1$d casillas restantes</string>
     <string name="mina">💣</string>
+    <string name="mensaje_minaperdida">Has perdido! Mina en casilla %1$d,%2$d</string>
 
 
 </resources>

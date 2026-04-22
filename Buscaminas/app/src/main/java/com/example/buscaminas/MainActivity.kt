@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -63,6 +64,7 @@ fun MyApp() {
 
     var pantallaActual by rememberSaveable { mutableStateOf("Principal") }
     var configPartida by rememberSaveable { mutableStateOf<CfgPartida?>(null) }
+    var resultado by rememberSaveable { mutableStateOf("") }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
@@ -90,10 +92,17 @@ fun MyApp() {
             "Juego" -> {
                 configPartida?.let { config ->
                     Juego(
-                        modifier = Modifier.padding(innerPadding),
-                        config = config
+                        config = config,
+                        onFinPartida = {
+                            resultado = it
+                            pantallaActual = "Resultados"
+                        }
                     )
                 }
+            }
+
+            "Resultados" -> {
+                Resultados(resultado = resultado)
             }
         }
     }
@@ -333,8 +342,8 @@ class CasillaEstado {
     var minasAlrededor by mutableIntStateOf(0)
 }
 @Composable
-fun Juego(modifier: Modifier = Modifier, config: CfgPartida) {
-
+fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (String) -> Unit) {
+    val context = LocalContext.current
     val tablero = remember(config) {
 
         val tablero2 = List(config.filas) {
@@ -397,19 +406,33 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida) {
             }
         }
 
-        Tablero(tablero)
+        Tablero(
+            tablero = tablero,
+            onClickMina = { fila, columna ->
+
+                val mensaje = context.getString(R.string.mensaje_minaperdida, fila, columna)
+
+                onFinPartida(mensaje)
+            }
+        )
     }
 }
 
 @Composable
-fun Tablero(tablero: List<List<CasillaEstado>>) {
+fun Tablero(tablero: List<List<CasillaEstado>>, onClickMina: (Int, Int) -> Unit){
 
     Column(modifier = Modifier.padding(10.dp)) {
 
-        tablero.forEach { fila ->
+        tablero.forEachIndexed { filaIndex, fila ->
             Row {
-                fila.forEach { casilla ->
-                    Casilla(casilla)
+                fila.forEachIndexed { colIndex, casilla ->
+
+                    Casilla(
+                        estado = casilla,
+                        fila = filaIndex,
+                        columna = colIndex,
+                        onClickMina = onClickMina
+                    )
                 }
             }
         }
@@ -417,7 +440,7 @@ fun Tablero(tablero: List<List<CasillaEstado>>) {
 }
 
 @Composable
-fun Casilla(estado: CasillaEstado) {
+fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickMina: (Int, Int) -> Unit) {
 
     Box(
         modifier = Modifier
@@ -431,6 +454,9 @@ fun Casilla(estado: CasillaEstado) {
             )
             .clickable(enabled = !estado.descubierta) {
                 estado.descubierta = true
+                if (estado.esMina) {
+                    onClickMina(fila, columna)
+                }
             },
         contentAlignment = Alignment.Center
     ) {
@@ -445,7 +471,7 @@ fun Casilla(estado: CasillaEstado) {
 }
 
 @Composable
-fun Resultados(modifier: Modifier = Modifier) {
+fun Resultados(resultado: String, modifier: Modifier = Modifier) {
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -493,7 +519,7 @@ fun Resultados(modifier: Modifier = Modifier) {
                     .border(1.dp, colorResource(id = android.R.color.black))
                     .padding(10.dp)
             ) {
-                Text("")
+                Text(resultado)
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -610,7 +636,8 @@ fun JuegoPreview() {
                 columnas = 5,
                 porcentajeMinas = 25,
                 tiempoActivo = true
-            )
+            ),
+            onFinPartida = {}
         )
     }
 }
@@ -619,6 +646,6 @@ fun JuegoPreview() {
 @Composable
 fun ResultadosPreview() {
     BuscaminasTheme {
-        Resultados()
+        Resultados(resultado= "asdsad")
     }
 }
