@@ -410,7 +410,7 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
             tablero = tablero,
             onClickMina = { fila, columna ->
 
-                val mensaje = context.getString(R.string.mensaje_minaperdida, fila, columna)
+                val mensaje = context.getString(R.string.mensaje_minaperdida, fila, columna,casillasRestantes)
 
                 onFinPartida(mensaje)
             }
