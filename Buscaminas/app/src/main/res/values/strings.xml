@@ -21,6 +21,7 @@
     <string name="control_tiempo">Control del tiempo</string>
     <string name="porc_minas">% de minas</string>
     <string name="casillas_restantes">%1$d casillas restantes</string>
+    <string name="mina">💣</string>
 
 
 </resources>

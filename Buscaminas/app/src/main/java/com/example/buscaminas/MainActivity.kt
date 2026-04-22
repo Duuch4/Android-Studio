@@ -326,15 +326,38 @@ fun Configuracion(modifier: Modifier = Modifier, onEmpezar: (CfgPartida) -> Unit
         }
     }
 }
+
+class CasillaEstado {
+    var descubierta by mutableStateOf(false)
+    var esMina by mutableStateOf(false)
+    var minasAlrededor by mutableIntStateOf(0)
+}
 @Composable
 fun Juego(modifier: Modifier = Modifier, config: CfgPartida) {
 
     val tablero = remember(config) {
-        List(config.filas) {
+
+        val tablero2 = List(config.filas) {
             MutableList(config.columnas) {
                 CasillaEstado()
             }
         }
+
+        val totalCasillas = config.filas * config.columnas
+        val totalMinas = (totalCasillas * config.porcentajeMinas) / 100
+
+        repeat(totalMinas) {
+            var fila: Int
+            var columna: Int
+
+            do {
+                fila = (0 until config.filas).random()
+                columna = (0 until config.columnas).random()
+            } while (tablero2[fila][columna].esMina)
+
+            tablero2[fila][columna].esMina = true //Control
+        }
+        tablero2
     }
 
     val casillasDescubiertas = tablero.flatten().count { it.descubierta }
@@ -377,10 +400,6 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida) {
         Tablero(tablero)
     }
 }
-class CasillaEstado {
-    var descubierta by mutableStateOf(false)
-    var esMina by mutableStateOf(false)
-}
 
 @Composable
 fun Tablero(tablero: List<List<CasillaEstado>>) {
@@ -415,7 +434,13 @@ fun Casilla(estado: CasillaEstado) {
             },
         contentAlignment = Alignment.Center
     ) {
-
+        if (estado.descubierta) {
+            if (estado.esMina) {
+                Text(text = stringResource(R.string.mina))
+            } else if (estado.minasAlrededor > 0) {
+                Text(estado.minasAlrededor.toString())
+            }
+        }
     }
 }
 
