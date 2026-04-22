@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.buscaminas.ui.theme.BuscaminasTheme
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -473,6 +474,11 @@ fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickMina: (Int, Int)
 @Composable
 fun Resultados(resultado: String, modifier: Modifier = Modifier) {
 
+    val fechaActual = remember {
+        val sdf = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+        sdf.format(java.util.Date())
+    }
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -505,7 +511,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier) {
                     .border(1.dp, colorResource(id = android.R.color.black))
                     .padding(10.dp)
             ) {
-                Text("")
+                Text(fechaActual)
             }
 
             Spacer(modifier = Modifier.height(10.dp))
