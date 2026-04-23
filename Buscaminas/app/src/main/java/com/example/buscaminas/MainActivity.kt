@@ -27,6 +27,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.buscaminas.ui.theme.BuscaminasTheme
+import kotlinx.coroutines.delay
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
@@ -102,8 +104,10 @@ fun MyApp() {
                 }
             }
 
-            "Resultados" -> {
-                Resultados(resultado = resultado)
+            "Resultados" -> { Resultados(
+                modifier = Modifier.padding(innerPadding),
+
+                resultado = resultado)
             }
         }
     }
@@ -358,6 +362,7 @@ fun colorNumero(minas: Int) = when (minas) {
 @Composable
 fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (String) -> Unit) {
     val context = LocalContext.current
+
     val tablero = remember(config) {
 
         val tablero2 = List(config.filas) {
@@ -418,6 +423,21 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
     val totalCasillas = config.filas * config.columnas
     val casillasRestantes = totalCasillas - casillasDescubiertas
 
+    var tiempoRestante by remember { mutableIntStateOf(25) }
+
+    if (config.tiempoActivo) {
+        LaunchedEffect(config) {
+            while (tiempoRestante > 0) {
+                delay(1000) //1s
+                tiempoRestante--
+            }
+
+            val mensaje = context.getString(R.string.mensaje_tiempoperdida, casillasRestantes)
+
+            onFinPartida(mensaje)
+        }
+    }
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -445,7 +465,7 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(5.dp))
-                    Text(text = "10s")
+                    Text(text = stringResource(R.string.tiempo_restante, tiempoRestante))
                 }
             }
         }
@@ -455,7 +475,6 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
             onClickMina = { fila, columna ->
 
                 val mensaje = context.getString(R.string.mensaje_minaperdida, fila, columna,casillasRestantes)
-
                 onFinPartida(mensaje)
             }
         )
