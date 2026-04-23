@@ -33,6 +33,7 @@
     <string name="email_env">Enviar e-mail</string>
     <string name="nueva_partida">Nueva Partida</string>
     <string name="asunto_email">Log - %1$s</string>
+    <string name="log_base">Alias: %1$s Casillas: %2$d x %3$d Minas: %4$d (%5$d%%) Casillas descubiertas: %6$d Tiempo: %7$d</string>
 
 
 </resources>

@@ -428,7 +428,7 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
         }
         tablero2
     }
-
+    val totalMinas = tablero.flatten().count { it.esMina }
     val casillasDescubiertas = tablero.flatten().count { it.descubierta }
 
     val totalCasillas = config.filas * config.columnas
@@ -443,21 +443,45 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                 tiempoRestante--
             }
 
+            val logBase = context.getString(
+                R.string.log_base,
+                config.alias,
+                config.filas,
+                config.columnas,
+                totalMinas,
+                config.porcentajeMinas,
+                casillasDescubiertas,
+                tiempoRestante
+            )
+
             val mensaje = context.getString(R.string.mensaje_tiempoperdida, casillasRestantes)
 
-            onFinPartida(mensaje)
+            onFinPartida(logBase + "\n" + mensaje)
         }
     }
 
     val casillasSinMinas = tablero.flatten().count { !it.esMina }
     val casillasDescubiertasSinMinas = tablero.flatten().count { it.descubierta && !it.esMina }
 
+
     LaunchedEffect(casillasDescubiertasSinMinas) {
         if (casillasDescubiertasSinMinas == casillasSinMinas) {
+            val logBase = context.getString(
+                R.string.log_base,
+                config.alias,
+                config.filas,
+                config.columnas,
+                totalMinas,
+                config.porcentajeMinas,
+                casillasDescubiertas,
+                tiempoRestante
+            )
+
             val mensaje = context.getString(R.string.mensaje_victoria, tiempoRestante)
-            onFinPartida(mensaje)
+            onFinPartida(logBase + "\n" + mensaje)
         }
     }
+
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -495,8 +519,18 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
             tablero = tablero,
             onClickMina = { fila, columna ->
 
+                val logBase = context.getString(
+                    R.string.log_base,
+                    config.alias,
+                    config.filas,
+                    config.columnas,
+                    totalMinas,
+                    config.porcentajeMinas,
+                    casillasDescubiertas,
+                    tiempoRestante
+                )
                 val mensaje = context.getString(R.string.mensaje_minaperdida, fila, columna,casillasRestantes)
-                onFinPartida(mensaje)
+                onFinPartida(logBase + "\n" + mensaje)
             }
         )
     }
@@ -624,7 +658,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
 
             OutlinedTextField(
                 value = email,
-                onValueChange = {},
+                onValueChange = {email = it},
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(1.dp, colorResource(id = android.R.color.black))
