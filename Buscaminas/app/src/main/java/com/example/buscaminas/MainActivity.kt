@@ -581,14 +581,14 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
         ) {
 
             Text(
-                text = "RESULTADOS PARTIDA",
+                text = stringResource(id = R.string.resultados_partida),
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp
             )
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            Text("Día y hora")
+            Text(text = stringResource(id = R.string.dia_hora))
 
             Box(
                 modifier = Modifier
@@ -602,7 +602,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Text("Valores del Log")
+            Text(text = stringResource(id = R.string.valores_log))
 
             Box(
                 modifier = Modifier
@@ -616,7 +616,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Text("E-mail destinatario")
+            Text(text = stringResource(id = R.string.email_res))
 
             OutlinedTextField(
                 value = "",
@@ -632,7 +632,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
                 onClick = {},
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Enviar e-mail")
+                Text(text = stringResource(id = R.string.email_env))
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -641,7 +641,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
                 onClick = onNuevaPartida,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Nueva partida")
+                Text(text = stringResource(id = R.string.nueva_partida))
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -650,7 +650,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
                 onClick = onSalir,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Salir")
+                Text(text = stringResource(id = R.string.boton_salir))
             }
         }
     }
