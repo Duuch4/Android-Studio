@@ -1,5 +1,6 @@
 package com.example.buscaminas
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -68,6 +69,7 @@ fun MyApp() {
     var pantallaActual by rememberSaveable { mutableStateOf("Principal") }
     var configPartida by rememberSaveable { mutableStateOf<CfgPartida?>(null) }
     var resultado by rememberSaveable { mutableStateOf("") }
+    val context = LocalContext.current
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
@@ -76,7 +78,9 @@ fun MyApp() {
             "Principal" -> Principal(
                 modifier = Modifier.padding(innerPadding),
                 onIrAyuda = { pantallaActual = "Ayuda" },
-                onEmpezarpartida = { pantallaActual = "Configuracion" }
+                onEmpezarpartida = { pantallaActual = "Configuracion" },
+                onSalir = {(context as? Activity)?.finish() }
+
             )
 
             "Ayuda" -> Ayuda(
@@ -104,16 +108,21 @@ fun MyApp() {
                 }
             }
 
-            "Resultados" -> { Resultados(
-                modifier = Modifier.padding(innerPadding),
-
-                resultado = resultado)
+            "Resultados" -> {
+                Resultados(
+                    modifier = Modifier.padding(innerPadding),
+                    resultado = resultado,
+                    onNuevaPartida = {
+                        pantallaActual = "Configuracion"
+                    },
+                    onSalir = {(context as? Activity)?.finish() }
+                )
             }
         }
     }
 }
 @Composable
-fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarpartida: () -> Unit) {
+fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarpartida: () -> Unit,onSalir: () -> Unit) {
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -138,7 +147,7 @@ fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarparti
                 Text(text = stringResource(id = R.string.boton_empezar))
             }
 
-            Button(onClick = { }) {
+            Button(onClick = onSalir) {
                 Text(text = stringResource(id = R.string.boton_salir))
             }
         }
@@ -534,7 +543,7 @@ fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickMina: (Int, Int)
 }
 
 @Composable
-fun Resultados(resultado: String, modifier: Modifier = Modifier) {
+fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: () -> Unit, onSalir: () -> Unit,) {
 
     val fechaActual = remember {
         val sdf = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
@@ -614,7 +623,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(10.dp))
 
             Button(
-                onClick = {},
+                onClick = onNuevaPartida,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Nueva partida")
@@ -623,7 +632,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(10.dp))
 
             Button(
-                onClick = {},
+                onClick = onSalir,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Salir")
@@ -673,7 +682,7 @@ fun Header(titulo: String, icono: Int) {
 @Composable
 fun PrincipalPreview() {
     BuscaminasTheme {
-        Principal(onIrAyuda = {},onEmpezarpartida = {})
+        Principal(onIrAyuda = {},onEmpezarpartida = {},onSalir={})
     }
 }
 
@@ -714,6 +723,10 @@ fun JuegoPreview() {
 @Composable
 fun ResultadosPreview() {
     BuscaminasTheme {
-        Resultados(resultado= "asdsad")
+        Resultados(
+            resultado = "asdsad",
+            onNuevaPartida = {},
+            onSalir = {}
+        )
     }
 }
