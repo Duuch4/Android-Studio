@@ -432,7 +432,7 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
     val totalCasillas = config.filas * config.columnas
     val casillasRestantes = totalCasillas - casillasDescubiertas
 
-    var tiempoRestante by remember { mutableIntStateOf(25) }
+    var tiempoRestante by rememberSaveable { mutableIntStateOf(25) }
 
     if (config.tiempoActivo) {
         LaunchedEffect(config) {
@@ -493,7 +493,12 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
 @Composable
 fun Tablero(tablero: List<List<CasillaEstado>>, onClickMina: (Int, Int) -> Unit){
 
-    Column(modifier = Modifier.padding(10.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
         tablero.forEachIndexed { filaIndex, fila ->
             Row {
