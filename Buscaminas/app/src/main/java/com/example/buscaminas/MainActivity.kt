@@ -1,6 +1,7 @@
 package com.example.buscaminas
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -46,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.example.buscaminas.ui.theme.BuscaminasTheme
 import kotlinx.coroutines.delay
 import java.util.Locale
@@ -560,7 +562,9 @@ fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickMina: (Int, Int)
 @Composable
 fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: () -> Unit, onSalir: () -> Unit,) {
 
-    val fechaActual = remember {
+    val context = LocalContext.current
+    var email by rememberSaveable { mutableStateOf("") }
+    val fechaActual = rememberSaveable {
         val sdf = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
         sdf.format(java.util.Date())
     }
@@ -619,7 +623,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
             Text(text = stringResource(id = R.string.email_res))
 
             OutlinedTextField(
-                value = "",
+                value = email,
                 onValueChange = {},
                 modifier = Modifier
                     .fillMaxWidth()
@@ -629,7 +633,19 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
             Spacer(modifier = Modifier.height(15.dp))
 
             Button(
-                onClick = {},
+                onClick = {
+                    val intent = Intent(Intent.ACTION_SENDTO).apply {
+                        data = "mailto:".toUri()
+                        putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+                        putExtra(
+                            Intent.EXTRA_SUBJECT,
+                            context.getString(R.string.asunto_email, fechaActual)
+                        )
+                        putExtra(Intent.EXTRA_TEXT, resultado)
+                    }
+
+                    context.startActivity(intent)
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = stringResource(id = R.string.email_env))
