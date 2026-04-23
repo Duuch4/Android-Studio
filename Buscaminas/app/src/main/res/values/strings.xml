@@ -25,6 +25,7 @@
     <string name="mensaje_minaperdida">Has perdido! Bomba en casilla %1$d,%2$d y te han quedado %3$d casillas por descubrir</string>
     <string name="mensaje_tiempoperdida">Has agotado el tiempo! Te han quedado %1$d casillas por descubrir</string>
     <string name="tiempo_restante">%1$d s</string>
+    <string name="mensaje_victoria">Has ganado! Te han quedado %1$d segundos</string>
 
 
 </resources>

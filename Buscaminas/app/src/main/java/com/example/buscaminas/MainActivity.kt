@@ -447,6 +447,16 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
         }
     }
 
+    val casillasSinMinas = tablero.flatten().count { !it.esMina }
+    val casillasDescubiertasSinMinas = tablero.flatten().count { it.descubierta && !it.esMina }
+
+    LaunchedEffect(casillasDescubiertasSinMinas) {
+        if (casillasDescubiertasSinMinas == casillasSinMinas) {
+            val mensaje = context.getString(R.string.mensaje_victoria, tiempoRestante)
+            onFinPartida(mensaje)
+        }
+    }
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
