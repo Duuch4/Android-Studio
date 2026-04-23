@@ -342,6 +342,19 @@ class CasillaEstado {
     var esMina by mutableStateOf(false)
     var minasAlrededor by mutableIntStateOf(0)
 }
+
+@Composable
+fun colorNumero(minas: Int) = when (minas) {
+    1 -> colorResource(R.color.num_1)
+    2 -> colorResource(R.color.num_2)
+    3 -> colorResource(R.color.num_3)
+    4 -> colorResource(R.color.num_4)
+    5 -> colorResource(R.color.num_5)
+    6 -> colorResource(R.color.num_6)
+    7 -> colorResource(R.color.num_7)
+    8 -> colorResource(R.color.num_8)
+    else -> colorResource(R.color.num_8)
+}
 @Composable
 fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (String) -> Unit) {
     val context = LocalContext.current
@@ -366,6 +379,36 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
             } while (tablero2[fila][columna].esMina)
 
             tablero2[fila][columna].esMina = true //Control
+        }
+
+        for (fila in 0 until config.filas) {
+            for (columna in 0 until config.columnas) {
+
+                if (!tablero2[fila][columna].esMina) {
+
+                    var contador = 0
+
+                    for (movFila in -1..1) {
+                        for (movColumna in -1..1) {
+
+                            if (movFila == 0 && movColumna == 0) continue // No contar la propia casilla
+
+                            val nuevaFila = fila + movFila
+                            val nuevaColumna = columna + movColumna
+
+                            if (
+                                nuevaFila in 0 until config.filas &&
+                                nuevaColumna in 0 until config.columnas &&
+                                tablero2[nuevaFila][nuevaColumna].esMina
+                            ) {
+                                contador++
+                            }
+                        }
+                    }
+
+                    tablero2[fila][columna].minasAlrededor = contador
+                }
+            }
         }
         tablero2
     }
@@ -465,7 +508,7 @@ fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickMina: (Int, Int)
             if (estado.esMina) {
                 Text(text = stringResource(R.string.mina))
             } else if (estado.minasAlrededor > 0) {
-                Text(estado.minasAlrededor.toString())
+                Text(estado.minasAlrededor.toString(),color = colorNumero(estado.minasAlrededor))
             }
         }
     }

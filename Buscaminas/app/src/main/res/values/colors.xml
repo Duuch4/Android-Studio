@@ -10,4 +10,12 @@
     <color name="verde_header1">#2AA63E</color>
     <color name="verde_header2">#58D56D</color>
     <color name="verde_header3">#9AE630</color>
+    <color name="num_1">#0000FF</color>
+    <color name="num_2">#008000</color>
+    <color name="num_3">#FF0000</color>
+    <color name="num_4">#800080</color>
+    <color name="num_5">#800000</color>
+    <color name="num_6">#00FFFF</color>
+    <color name="num_7">#000000</color>
+    <color name="num_8">#808080</color>
 </resources>
