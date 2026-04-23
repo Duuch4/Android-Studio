@@ -439,9 +439,12 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
     if (config.tiempoActivo) {
         LaunchedEffect(config) {
             while (tiempoRestante > 0) {
-                delay(1000) //1s
+                delay(1000)
                 tiempoRestante--
             }
+
+            val casillasDescubiertas = tablero.flatten().count { it.descubierta }
+            val casillasRestantes = totalCasillas - casillasDescubiertas
 
             val logBase = context.getString(
                 R.string.log_base,
@@ -454,7 +457,10 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                 tiempoRestante
             )
 
-            val mensaje = context.getString(R.string.mensaje_tiempoperdida, casillasRestantes)
+            val mensaje = context.getString(
+                R.string.mensaje_tiempoperdida,
+                casillasRestantes
+            )
 
             onFinPartida(logBase + "\n" + mensaje)
         }
@@ -466,6 +472,9 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
 
     LaunchedEffect(casillasDescubiertasSinMinas) {
         if (casillasDescubiertasSinMinas == casillasSinMinas) {
+
+            val casillasDescubiertas = tablero.flatten().count { it.descubierta }
+
             val logBase = context.getString(
                 R.string.log_base,
                 config.alias,
@@ -477,7 +486,11 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                 tiempoRestante
             )
 
-            val mensaje = context.getString(R.string.mensaje_victoria, tiempoRestante)
+            val mensaje = context.getString(
+                R.string.mensaje_victoria,
+                tiempoRestante
+            )
+
             onFinPartida(logBase + "\n" + mensaje)
         }
     }
@@ -519,6 +532,9 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
             tablero = tablero,
             onClickMina = { fila, columna ->
 
+                val casillasDescubiertas = tablero.flatten().count { it.descubierta }
+                val casillasRestantes = totalCasillas - casillasDescubiertas
+
                 val logBase = context.getString(
                     R.string.log_base,
                     config.alias,
@@ -529,7 +545,14 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                     casillasDescubiertas,
                     tiempoRestante
                 )
-                val mensaje = context.getString(R.string.mensaje_minaperdida, fila, columna,casillasRestantes)
+
+                val mensaje = context.getString(
+                    R.string.mensaje_minaperdida,
+                    fila,
+                    columna,
+                    casillasRestantes
+                )
+
                 onFinPartida(logBase + "\n" + mensaje)
             }
         )
