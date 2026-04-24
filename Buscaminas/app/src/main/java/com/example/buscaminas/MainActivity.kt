@@ -546,12 +546,6 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                 tablero = tablero,
                 onClickMina = { fila, columna ->
 
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            context.getString(R.string.snackbar_perdida)
-                        )
-                    }
-
                     val casillasDescubiertas = tablero.flatten().count { it.descubierta }
                     val casillasRestantes = totalCasillas - casillasDescubiertas
 
@@ -573,7 +567,14 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                         casillasRestantes
                     )
 
-                    onFinPartida(logBase + "\n" + mensaje)
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            context.getString(R.string.snackbar_perdida)
+                        )
+                        delay(300)
+
+                        onFinPartida(logBase + "\n" + mensaje)
+                    }
                 }
             )
         }
