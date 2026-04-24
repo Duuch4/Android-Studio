@@ -377,7 +377,7 @@ fun colorNumero(minas: Int) = when (minas) {
 @Composable
 fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (String) -> Unit) {
     val context = LocalContext.current
-    val snackbarHostState = rememberSaveable { SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     val tablero = remember(config) {
