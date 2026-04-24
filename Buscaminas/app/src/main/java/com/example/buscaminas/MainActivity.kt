@@ -27,7 +27,6 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -504,7 +503,7 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
 
     Scaffold(
         snackbarHost = {
-            SnackbarHost(snackbarHostState)
+            androidx.compose.material3.SnackbarHost(hostState = snackbarHostState)
         }
     ) { padding ->
 
@@ -568,11 +567,7 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                     )
 
                     scope.launch {
-                        snackbarHostState.showSnackbar(
-                            context.getString(R.string.snackbar_perdida)
-                        )
-                        delay(300)
-
+                        snackbarHostState.showSnackbar("Has perdido 💣")
                         onFinPartida(logBase + "\n" + mensaje)
                     }
                 }
@@ -785,6 +780,7 @@ fun Header(titulo: String, icono: Int) {
         )
     }
 }
+
 
 
 @Preview(showBackground = true)
