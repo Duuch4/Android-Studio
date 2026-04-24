@@ -478,29 +478,32 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
     val tiempoRestante = viewModel.tiempoRestante
 
     if (config.tiempoActivo) {
-        LaunchedEffect(config) {
-            viewModel.iniciarTiempo {
+        LaunchedEffect(Unit) {
+            if (config.tiempoActivo) {
 
-                val casillasDescubiertas = tablero.flatten().count { it.descubierta }
-                val casillasRestantes = totalCasillas - casillasDescubiertas
+                viewModel.iniciarTiempo {
 
-                val logBase = context.getString(
-                    R.string.log_base,
-                    config.alias,
-                    config.filas,
-                    config.columnas,
-                    totalMinas,
-                    config.porcentajeMinas,
-                    casillasDescubiertas,
-                    viewModel.tiempoRestante
-                )
+                    val casillasDescubiertas = tablero.flatten().count { it.descubierta }
+                    val casillasRestantes = totalCasillas - casillasDescubiertas
 
-                val mensaje = context.getString(
-                    R.string.mensaje_tiempoperdida,
-                    casillasRestantes
-                )
+                    val logBase = context.getString(
+                        R.string.log_base,
+                        config.alias,
+                        config.filas,
+                        config.columnas,
+                        totalMinas,
+                        config.porcentajeMinas,
+                        casillasDescubiertas,
+                        viewModel.tiempoRestante
+                    )
 
-                onFinPartida(logBase + "\n" + mensaje, TipoFin.TIEMPO)
+                    val mensaje = context.getString(
+                        R.string.mensaje_tiempoperdida,
+                        casillasRestantes
+                    )
+
+                    onFinPartida(logBase + "\n" + mensaje, TipoFin.TIEMPO)
+                }
             }
         }
     }

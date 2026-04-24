@@ -16,11 +16,14 @@ class JuegoViewModel : ViewModel() {
     var configActual: CfgPartida? = null
         private set
 
-    var tiempoRestante by mutableStateOf(25)
+    companion object {
+        const val TIEMPO_INICIAL = 25
+    }
+
+    var tiempoRestante by mutableStateOf(TIEMPO_INICIAL)
         private set
 
     fun iniciarPartida(config: CfgPartida) {
-
         configActual = config
 
         val tablero2 = List(config.filas) {
@@ -73,16 +76,20 @@ class JuegoViewModel : ViewModel() {
                 }
             }
         }
+
         tablero = tablero2
     }
 
-    fun iniciarTiempo(onTiempoTerminado: () -> Unit) {
+    fun iniciarTiempo(onFin: () -> Unit) {
         viewModelScope.launch {
+            tiempoRestante = TIEMPO_INICIAL
+
             while (tiempoRestante > 0) {
                 delay(1000)
                 tiempoRestante--
             }
-            onTiempoTerminado()
+
+            onFin()
         }
     }
 }
