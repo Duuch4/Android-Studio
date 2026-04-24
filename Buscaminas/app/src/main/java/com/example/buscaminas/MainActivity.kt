@@ -463,10 +463,8 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
 
     val viewModel: JuegoViewModel = viewModel()
 
-    LaunchedEffect(Unit) {
-        if (viewModel.tablero.isEmpty()) {
-            viewModel.iniciarPartida(config)
-        }
+    LaunchedEffect(config) {
+        viewModel.iniciarPartida(config)
     }
 
     val tablero = viewModel.tablero
