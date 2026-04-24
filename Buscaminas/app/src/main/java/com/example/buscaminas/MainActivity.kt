@@ -509,8 +509,8 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
     val casillasDescubiertasSinMinas = tablero.flatten().count { it.descubierta && !it.esMina }
 
 
-    LaunchedEffect(casillasDescubiertasSinMinas) {
-        if (casillasDescubiertasSinMinas == casillasSinMinas) {
+    LaunchedEffect(tablero,casillasDescubiertasSinMinas) {
+        if (tablero.isNotEmpty() && casillasDescubiertasSinMinas == casillasSinMinas) {
 
             val casillasDescubiertas = tablero.flatten().count { it.descubierta }
 
