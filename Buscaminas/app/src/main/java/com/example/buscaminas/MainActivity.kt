@@ -59,6 +59,7 @@ import androidx.core.net.toUri
 import com.example.buscaminas.ui.theme.BuscaminasTheme
 import kotlinx.coroutines.delay
 import java.util.Locale
+import androidx.lifecycle.viewmodel.compose.viewModel
 enum class TipoFin {
     VICTORIA, MINA, TIEMPO
 }
@@ -303,6 +304,8 @@ fun Configuracion(modifier: Modifier = Modifier, onEmpezar: (CfgPartida) -> Unit
     var medida by rememberSaveable { mutableIntStateOf(7) }
     var tiempoActivado by rememberSaveable { mutableStateOf(false) }
     var porcentajeMinas by rememberSaveable { mutableIntStateOf(25) }
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -457,60 +460,17 @@ fun colorNumero(minas: Int) = when (minas) {
 @Composable
 fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (String, TipoFin) -> Unit) {
     val context = LocalContext.current
-    val tablero = remember(config) {
 
-        val tablero2 = List(config.filas) {
-            MutableList(config.columnas) {
-                CasillaEstado()
-            }
+    val viewModel: JuegoViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        if (viewModel.tablero.isEmpty()) {
+            viewModel.iniciarPartida(config)
         }
-
-        val totalCasillas = config.filas * config.columnas
-        val totalMinas = (totalCasillas * config.porcentajeMinas) / 100
-
-        repeat(totalMinas) {
-            var fila: Int
-            var columna: Int
-
-            do {
-                fila = (0 until config.filas).random()
-                columna = (0 until config.columnas).random()
-            } while (tablero2[fila][columna].esMina)
-
-            tablero2[fila][columna].esMina = true //Control
-        }
-
-        for (fila in 0 until config.filas) {
-            for (columna in 0 until config.columnas) {
-
-                if (!tablero2[fila][columna].esMina) {
-
-                    var contador = 0
-
-                    for (movFila in -1..1) {
-                        for (movColumna in -1..1) {
-
-                            if (movFila == 0 && movColumna == 0) continue // No contar la propia casilla
-
-                            val nuevaFila = fila + movFila
-                            val nuevaColumna = columna + movColumna
-
-                            if (
-                                nuevaFila in 0 until config.filas &&
-                                nuevaColumna in 0 until config.columnas &&
-                                tablero2[nuevaFila][nuevaColumna].esMina
-                            ) {
-                                contador++
-                            }
-                        }
-                    }
-
-                    tablero2[fila][columna].minasAlrededor = contador
-                }
-            }
-        }
-        tablero2
     }
+
+    val tablero = viewModel.tablero
+    
     val totalMinas = tablero.flatten().count { it.esMina }
     val casillasDescubiertas = tablero.flatten().count { it.descubierta }
 
