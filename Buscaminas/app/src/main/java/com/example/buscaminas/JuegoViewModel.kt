@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -22,6 +23,8 @@ class JuegoViewModel : ViewModel() {
 
     var tiempoRestante by mutableStateOf(TIEMPO_INICIAL)
         private set
+
+    private var contadorTiempo: Job? = null
 
     fun iniciarPartida(config: CfgPartida) {
         configActual = config
@@ -81,7 +84,11 @@ class JuegoViewModel : ViewModel() {
     }
 
     fun iniciarTiempo(onFin: () -> Unit) {
-        viewModelScope.launch {
+
+        if (contadorTiempo?.isActive == true) return
+
+        contadorTiempo = viewModelScope.launch {
+
             tiempoRestante = TIEMPO_INICIAL
 
             while (tiempoRestante > 0) {
@@ -91,5 +98,9 @@ class JuegoViewModel : ViewModel() {
 
             onFin()
         }
+    }
+
+    fun detenerTiempo() {
+        contadorTiempo?.cancel()
     }
 }

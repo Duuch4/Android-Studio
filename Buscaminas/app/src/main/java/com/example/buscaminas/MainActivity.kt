@@ -501,7 +501,6 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                         R.string.mensaje_tiempoperdida,
                         casillasRestantes
                     )
-
                     onFinPartida(logBase + "\n" + mensaje, TipoFin.TIEMPO)
                 }
             }
@@ -532,7 +531,7 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                 R.string.mensaje_victoria,
                 tiempoRestante
             )
-
+            viewModel.detenerTiempo()
             onFinPartida(logBase + "\n" + mensaje, TipoFin.VICTORIA)
         }
     }
@@ -596,7 +595,7 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                     columna,
                     casillasRestantes
                 )
-
+                viewModel.detenerTiempo()
                 onFinPartida(logBase + "\n" + mensaje, TipoFin.MINA)
             }
         )
