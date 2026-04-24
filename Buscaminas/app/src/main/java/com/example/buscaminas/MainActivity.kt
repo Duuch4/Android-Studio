@@ -3,6 +3,7 @@ package com.example.buscaminas
 import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -616,6 +617,8 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
 
                 val casillasDescubiertas = tablero.flatten().count { it.descubierta }
                 val casillasRestantes = totalCasillas - casillasDescubiertas
+                val mediaPlayer = MediaPlayer.create(context, R.raw.explosion)
+                mediaPlayer.start()
 
                 val logBase = context.getString(
                     R.string.log_base,
