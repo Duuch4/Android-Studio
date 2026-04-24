@@ -35,7 +35,8 @@
     <string name="asunto_email">Log - %1$s</string>
     <string name="log_base">Alias: %1$s Casillas: %2$d x %3$d Minas: %4$d (%5$d%%) Casillas descubiertas: %6$d Tiempo: %7$d</string>
     <string name="partida_marcha">Partida en marcha</string>
-    <string name="snackbar_perdida">Has perdido 💣</string>
-    <string name="snackbar_victoria">Has ganado 👍</string>
-    <string name="snackbar_tiempo">Tiempo agotado ⏰</string>
+    <string name="snackbar_perdida">Has perdido, inténtalo de nuevo!</string>
+    <string name="snackbar_victoria">Has ganado enhorabuena!</string>
+    <string name="snackbar_tiempo">Tiempo agotado, repite suerte!</string>
+
 </resources>

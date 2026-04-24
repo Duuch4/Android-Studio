@@ -27,6 +27,7 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,7 +36,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -52,8 +52,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.example.buscaminas.ui.theme.BuscaminasTheme
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.Locale
+enum class TipoFin {
+    VICTORIA, MINA, TIEMPO
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,8 +77,16 @@ fun MyApp() {
     var configPartida by rememberSaveable { mutableStateOf<CfgPartida?>(null) }
     var resultado by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
+    var tipoFin by rememberSaveable { mutableStateOf<TipoFin?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(data.visuals.message, tipoFin)
+            }
+        }){ innerPadding ->
 
         when(pantallaActual){
 
@@ -105,8 +115,9 @@ fun MyApp() {
                 configPartida?.let { config ->
                     Juego(
                         config = config,
-                        onFinPartida = {
-                            resultado = it
+                        onFinPartida = { res, tipo ->
+                            resultado = res
+                            tipoFin = tipo
                             pantallaActual = "Resultados"
                         }
                     )
@@ -117,6 +128,8 @@ fun MyApp() {
                 Resultados(
                     modifier = Modifier.padding(innerPadding),
                     resultado = resultado,
+                    tipoFin = tipoFin,
+                    snackbarHostState = snackbarHostState,
                     onNuevaPartida = {
                         pantallaActual = "Configuracion"
                     },
@@ -374,11 +387,8 @@ fun colorNumero(minas: Int) = when (minas) {
     else -> colorResource(R.color.num_8)
 }
 @Composable
-fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (String) -> Unit) {
+fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (String, TipoFin) -> Unit) {
     val context = LocalContext.current
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
     val tablero = remember(config) {
 
         val tablero2 = List(config.filas) {
@@ -467,7 +477,7 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                 casillasRestantes
             )
 
-            onFinPartida(logBase + "\n" + mensaje)
+            onFinPartida(logBase + "\n" + mensaje,TipoFin.TIEMPO)
         }
     }
 
@@ -496,83 +506,71 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                 tiempoRestante
             )
 
-            onFinPartida(logBase + "\n" + mensaje)
+            onFinPartida(logBase + "\n" + mensaje, TipoFin.VICTORIA)
         }
     }
 
 
-    Scaffold(
-        snackbarHost = {
-            androidx.compose.material3.SnackbarHost(hostState = snackbarHostState)
-        }
-    ) { padding ->
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
 
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(padding)
+        Header(
+            titulo = stringResource(R.string.partida_marcha),
+            icono = R.drawable.icono_mina
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Header(
-                titulo = stringResource(R.string.partida_marcha),
-                icono = R.drawable.icono_mina
-            )
+            Text(text = stringResource(R.string.casillas_restantes, casillasRestantes))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Text(text = stringResource(R.string.casillas_restantes, casillasRestantes))
-
-                if (config.tiempoActivo) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.drawable.tiempo),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Text(text = stringResource(R.string.tiempo_restante, tiempoRestante))
-                    }
+            if (config.tiempoActivo) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.drawable.tiempo),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(text = stringResource(R.string.tiempo_restante, tiempoRestante))
                 }
             }
-
-            Tablero(
-                tablero = tablero,
-                onClickMina = { fila, columna ->
-
-                    val casillasDescubiertas = tablero.flatten().count { it.descubierta }
-                    val casillasRestantes = totalCasillas - casillasDescubiertas
-
-                    val logBase = context.getString(
-                        R.string.log_base,
-                        config.alias,
-                        config.filas,
-                        config.columnas,
-                        totalMinas,
-                        config.porcentajeMinas,
-                        casillasDescubiertas,
-                        tiempoRestante
-                    )
-
-                    val mensaje = context.getString(
-                        R.string.mensaje_minaperdida,
-                        fila,
-                        columna,
-                        casillasRestantes
-                    )
-
-                    scope.launch {
-                        snackbarHostState.showSnackbar("Has perdido 💣")
-                        onFinPartida(logBase + "\n" + mensaje)
-                    }
-                }
-            )
         }
+
+        Tablero(
+            tablero = tablero,
+            onClickMina = { fila, columna ->
+
+                val casillasDescubiertas = tablero.flatten().count { it.descubierta }
+                val casillasRestantes = totalCasillas - casillasDescubiertas
+
+                val logBase = context.getString(
+                    R.string.log_base,
+                    config.alias,
+                    config.filas,
+                    config.columnas,
+                    totalMinas,
+                    config.porcentajeMinas,
+                    casillasDescubiertas,
+                    tiempoRestante
+                )
+
+                val mensaje = context.getString(
+                    R.string.mensaje_minaperdida,
+                    fila,
+                    columna,
+                    casillasRestantes
+                )
+
+                onFinPartida(logBase + "\n" + mensaje, TipoFin.MINA)
+            }
+        )
     }
 }
 
@@ -634,7 +632,7 @@ fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickMina: (Int, Int)
 }
 
 @Composable
-fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: () -> Unit, onSalir: () -> Unit,) {
+fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: () -> Unit, onSalir: () -> Unit,tipoFin: TipoFin?,snackbarHostState: SnackbarHostState) {
 
     val context = LocalContext.current
     var email by rememberSaveable { mutableStateOf("") }
@@ -643,8 +641,22 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
         sdf.format(java.util.Date())
     }
 
+    LaunchedEffect(tipoFin) {
+        val mensaje = when (tipoFin) {
+            TipoFin.MINA -> context.getString(R.string.snackbar_perdida)
+            TipoFin.VICTORIA -> context.getString(R.string.snackbar_victoria)
+            TipoFin.TIEMPO -> context.getString(R.string.snackbar_tiempo)
+            null -> ""
+        }
+
+        if (mensaje.isNotEmpty()) {
+            snackbarHostState.showSnackbar(mensaje)
+        }
+    }
+
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
     ) {
 
         Header(
@@ -698,7 +710,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
 
             OutlinedTextField(
                 value = email,
-                onValueChange = {email = it},
+                onValueChange = { email = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(1.dp, colorResource(id = android.R.color.black))
@@ -747,6 +759,41 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
 }
 
 @Composable
+fun Snackbar(mensaje: String, tipoFin: TipoFin?) {
+
+    val icono = when (tipoFin) {
+        TipoFin.VICTORIA -> R.drawable.victoria
+        TipoFin.TIEMPO -> R.drawable.tiempo
+        TipoFin.MINA -> R.drawable.icono_mina
+        null -> R.drawable.icono_mina
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(15.dp)
+            .background(colorResource(R.color.verde_header2))
+            .padding(15.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+
+            Image(
+                painter = painterResource(icono),
+                contentDescription = null,
+                modifier = Modifier.size(50.dp)
+            )
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Text(
+                text = mensaje,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
 fun Header(titulo: String, icono: Int) {
     Row(
         modifier = Modifier
@@ -775,8 +822,6 @@ fun Header(titulo: String, icono: Int) {
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 10.dp)
-
-
         )
     }
 }
@@ -819,7 +864,7 @@ fun JuegoPreview() {
                 porcentajeMinas = 25,
                 tiempoActivo = true
             ),
-            onFinPartida = {}
+            onFinPartida = { _, _ -> }
         )
     }
 }
@@ -827,9 +872,12 @@ fun JuegoPreview() {
 @Preview(showBackground = true)
 @Composable
 fun ResultadosPreview() {
+    val snackbarHostState = SnackbarHostState()
     BuscaminasTheme {
         Resultados(
-            resultado = "asdsad",
+            resultado = "Partida de prueba",
+            tipoFin = TipoFin.MINA,
+            snackbarHostState = snackbarHostState,
             onNuevaPartida = {},
             onSalir = {}
         )
