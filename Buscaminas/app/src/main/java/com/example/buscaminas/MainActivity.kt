@@ -2,6 +2,7 @@ package com.example.buscaminas
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,12 +16,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedButton
@@ -41,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -68,7 +73,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 @Composable
 fun MyApp() {
@@ -175,47 +179,110 @@ fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarparti
 @Composable
 fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
 
-    Column(
-        modifier = modifier.fillMaxSize()
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    ) {
+    if (isLandscape) {
+        Column(modifier = modifier.fillMaxSize()) {
 
-        Header(
-            titulo = stringResource(id = R.string.header_ayuda),
-            icono = R.drawable.ayudalogo
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(15.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-
-            Text(text = stringResource(id = R.string.text_ayuda),
-            fontWeight = FontWeight.Bold)
-
-            Text(text = stringResource(id = R.string.text_ayuda1))
-
-            Text(text = stringResource(id = R.string.text_ayuda2))
-
-            Text(text = stringResource(id = R.string.text_ayuda4))
-
-            Text(text = stringResource(id = R.string.text_ayuda5))
-
-            Text(text = stringResource(id = R.string.text_ayuda6))
-
-            Image(
-                painter = painterResource(id = R.drawable.buscaminas),
-                contentDescription = stringResource(id = R.string.ph_buscaminas),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp)
-                    .padding(bottom = 40.dp)
+            Header(
+                titulo = stringResource(id = R.string.header_ayuda),
+                icono = R.drawable.ayudalogo
             )
 
-            Button(onClick = onVolver) {
-                Text(stringResource(id = R.string.on_volver))
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+            ) {
+
+                Column(
+                    modifier = Modifier
+                        .weight(1.5f)
+                        .padding(end = 20.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+
+                    Text(
+                        text = stringResource(R.string.text_ayuda),
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    Text(stringResource(R.string.text_ayuda1))
+                    Text(stringResource(R.string.text_ayuda2))
+                    Text(stringResource(R.string.text_ayuda4))
+                    Text(stringResource(R.string.text_ayuda5))
+                    Text(stringResource(R.string.text_ayuda6))
+                }
+
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+
+                    Image(
+                        painter = painterResource(id = R.drawable.buscaminas),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                    )
+
+                    Spacer(modifier = Modifier.height(30.dp))
+
+                    Button(
+                        onClick = onVolver,
+                        modifier = Modifier.width(140.dp)
+                    ) {
+                        Text(stringResource(id = R.string.on_volver))
+                    }
+                }
+            }
+        }
+
+    } else {
+        Column(modifier = modifier.fillMaxSize()) {
+
+            Header(
+                titulo = stringResource(id = R.string.header_ayuda),
+                icono = R.drawable.ayudalogo
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(15.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+
+                Text(
+                    text = stringResource(id = R.string.text_ayuda),
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(stringResource(id = R.string.text_ayuda1))
+                Text(stringResource(id = R.string.text_ayuda2))
+                Text(stringResource(id = R.string.text_ayuda4))
+                Text(stringResource(id = R.string.text_ayuda5))
+                Text(stringResource(id = R.string.text_ayuda6))
+
+                Image(
+                    painter = painterResource(id = R.drawable.buscaminas),
+                    contentDescription = stringResource(id = R.string.ph_buscaminas),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp, bottom = 40.dp)
+                )
+
+                Button(onClick = onVolver) {
+                    Text(stringResource(id = R.string.on_volver))
+                }
             }
         }
     }
