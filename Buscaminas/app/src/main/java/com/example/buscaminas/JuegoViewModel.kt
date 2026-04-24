@@ -27,7 +27,10 @@ class JuegoViewModel : ViewModel() {
     private var contadorTiempo: Job? = null
 
     fun iniciarPartida(config: CfgPartida) {
+
+        detenerTiempo()
         configActual = config
+        tiempoRestante = TIEMPO_INICIAL
 
         val tablero2 = List(config.filas) {
             MutableList(config.columnas) {

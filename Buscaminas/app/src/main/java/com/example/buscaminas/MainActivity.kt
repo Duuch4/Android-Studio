@@ -463,10 +463,6 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
 
     val viewModel: JuegoViewModel = viewModel()
 
-    LaunchedEffect(config) {
-        viewModel.iniciarPartida(config)
-    }
-
     val tablero = viewModel.tablero
     
     val totalMinas = tablero.flatten().count { it.esMina }
@@ -477,32 +473,34 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
 
     val tiempoRestante = viewModel.tiempoRestante
 
-    if (config.tiempoActivo) {
-        LaunchedEffect(Unit) {
-            if (config.tiempoActivo) {
+    LaunchedEffect(config) {
 
-                viewModel.iniciarTiempo {
+        viewModel.iniciarPartida(config)
 
-                    val casillasDescubiertas = tablero.flatten().count { it.descubierta }
-                    val casillasRestantes = totalCasillas - casillasDescubiertas
+        if (config.tiempoActivo) {
+            viewModel.iniciarTiempo {
 
-                    val logBase = context.getString(
-                        R.string.log_base,
-                        config.alias,
-                        config.filas,
-                        config.columnas,
-                        totalMinas,
-                        config.porcentajeMinas,
-                        casillasDescubiertas,
-                        viewModel.tiempoRestante
-                    )
+                val casillasDescubiertas = viewModel.tablero.flatten().count { it.descubierta }
+                val totalCasillas = config.filas * config.columnas
+                val casillasRestantes = totalCasillas - casillasDescubiertas
 
-                    val mensaje = context.getString(
-                        R.string.mensaje_tiempoperdida,
-                        casillasRestantes
-                    )
-                    onFinPartida(logBase + "\n" + mensaje, TipoFin.TIEMPO)
-                }
+                val logBase = context.getString(
+                    R.string.log_base,
+                    config.alias,
+                    config.filas,
+                    config.columnas,
+                    viewModel.tablero.flatten().count { it.esMina },
+                    config.porcentajeMinas,
+                    casillasDescubiertas,
+                    viewModel.tiempoRestante
+                )
+
+                val mensaje = context.getString(
+                    R.string.mensaje_tiempoperdida,
+                    casillasRestantes
+                )
+
+                onFinPartida(logBase + "\n" + mensaje, TipoFin.TIEMPO)
             }
         }
     }
