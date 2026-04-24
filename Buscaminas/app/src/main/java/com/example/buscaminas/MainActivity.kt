@@ -27,6 +27,8 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -50,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.example.buscaminas.ui.theme.BuscaminasTheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
@@ -373,6 +377,8 @@ fun colorNumero(minas: Int) = when (minas) {
 @Composable
 fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (String) -> Unit) {
     val context = LocalContext.current
+    val snackbarHostState = rememberSaveable { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     val tablero = remember(config) {
 
@@ -496,66 +502,81 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
     }
 
 
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
+    ) { padding ->
 
-        Header(
-            titulo = "Partida en marcha",
-            icono = R.drawable.icono_mina
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(padding)
         ) {
 
-            Text(text = stringResource(R.string.casillas_restantes, casillasRestantes))
+            Header(
+                titulo = stringResource(R.string.partida_marcha),
+                icono = R.drawable.icono_mina
+            )
 
-            if (config.tiempoActivo) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.tiempo),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(text = stringResource(R.string.tiempo_restante, tiempoRestante))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(text = stringResource(R.string.casillas_restantes, casillasRestantes))
+
+                if (config.tiempoActivo) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.tiempo),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(text = stringResource(R.string.tiempo_restante, tiempoRestante))
+                    }
                 }
             }
+
+            Tablero(
+                tablero = tablero,
+                onClickMina = { fila, columna ->
+
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            context.getString(R.string.snackbar_perdida)
+                        )
+                    }
+
+                    val casillasDescubiertas = tablero.flatten().count { it.descubierta }
+                    val casillasRestantes = totalCasillas - casillasDescubiertas
+
+                    val logBase = context.getString(
+                        R.string.log_base,
+                        config.alias,
+                        config.filas,
+                        config.columnas,
+                        totalMinas,
+                        config.porcentajeMinas,
+                        casillasDescubiertas,
+                        tiempoRestante
+                    )
+
+                    val mensaje = context.getString(
+                        R.string.mensaje_minaperdida,
+                        fila,
+                        columna,
+                        casillasRestantes
+                    )
+
+                    onFinPartida(logBase + "\n" + mensaje)
+                }
+            )
         }
-
-        Tablero(
-            tablero = tablero,
-            onClickMina = { fila, columna ->
-
-                val casillasDescubiertas = tablero.flatten().count { it.descubierta }
-                val casillasRestantes = totalCasillas - casillasDescubiertas
-
-                val logBase = context.getString(
-                    R.string.log_base,
-                    config.alias,
-                    config.filas,
-                    config.columnas,
-                    totalMinas,
-                    config.porcentajeMinas,
-                    casillasDescubiertas,
-                    tiempoRestante
-                )
-
-                val mensaje = context.getString(
-                    R.string.mensaje_minaperdida,
-                    fila,
-                    columna,
-                    casillasRestantes
-                )
-
-                onFinPartida(logBase + "\n" + mensaje)
-            }
-        )
     }
 }
 
@@ -763,7 +784,6 @@ fun Header(titulo: String, icono: Int) {
         )
     }
 }
-
 
 
 @Preview(showBackground = true)
