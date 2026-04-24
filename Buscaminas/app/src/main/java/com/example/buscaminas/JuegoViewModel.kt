@@ -4,6 +4,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class JuegoViewModel : ViewModel() {
 
@@ -11,6 +14,9 @@ class JuegoViewModel : ViewModel() {
         private set
 
     var configActual: CfgPartida? = null
+        private set
+
+    var tiempoRestante by mutableStateOf(25)
         private set
 
     fun iniciarPartida(config: CfgPartida) {
@@ -68,5 +74,15 @@ class JuegoViewModel : ViewModel() {
             }
         }
         tablero = tablero2
+    }
+
+    fun iniciarTiempo(onTiempoTerminado: () -> Unit) {
+        viewModelScope.launch {
+            while (tiempoRestante > 0) {
+                delay(1000)
+                tiempoRestante--
+            }
+            onTiempoTerminado()
+        }
     }
 }

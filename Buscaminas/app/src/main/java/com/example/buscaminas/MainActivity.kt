@@ -475,35 +475,33 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
     val totalCasillas = config.filas * config.columnas
     val casillasRestantes = totalCasillas - casillasDescubiertas
 
-    var tiempoRestante by rememberSaveable { mutableIntStateOf(25) }
+    val tiempoRestante = viewModel.tiempoRestante
 
     if (config.tiempoActivo) {
         LaunchedEffect(config) {
-            while (tiempoRestante > 0) {
-                delay(1000)
-                tiempoRestante--
+            viewModel.iniciarTiempo {
+
+                val casillasDescubiertas = tablero.flatten().count { it.descubierta }
+                val casillasRestantes = totalCasillas - casillasDescubiertas
+
+                val logBase = context.getString(
+                    R.string.log_base,
+                    config.alias,
+                    config.filas,
+                    config.columnas,
+                    totalMinas,
+                    config.porcentajeMinas,
+                    casillasDescubiertas,
+                    viewModel.tiempoRestante
+                )
+
+                val mensaje = context.getString(
+                    R.string.mensaje_tiempoperdida,
+                    casillasRestantes
+                )
+
+                onFinPartida(logBase + "\n" + mensaje, TipoFin.TIEMPO)
             }
-
-            val casillasDescubiertas = tablero.flatten().count { it.descubierta }
-            val casillasRestantes = totalCasillas - casillasDescubiertas
-
-            val logBase = context.getString(
-                R.string.log_base,
-                config.alias,
-                config.filas,
-                config.columnas,
-                totalMinas,
-                config.porcentajeMinas,
-                casillasDescubiertas,
-                tiempoRestante
-            )
-
-            val mensaje = context.getString(
-                R.string.mensaje_tiempoperdida,
-                casillasRestantes
-            )
-
-            onFinPartida(logBase + "\n" + mensaje,TipoFin.TIEMPO)
         }
     }
 
