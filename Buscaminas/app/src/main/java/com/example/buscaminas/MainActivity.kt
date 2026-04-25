@@ -15,6 +15,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -54,6 +55,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -713,49 +715,67 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
                 }
             }
         }
-        Tablero(
-            tablero = tablero,
-            onClickCasilla = { fila, columna ->
-                viewModel.descubrirCasilla(fila, columna)
-            }
-        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
+            Tablero(
+                tablero = tablero,
+                onClickCasilla = { fila, columna ->
+                    viewModel.descubrirCasilla(fila, columna)
+                }
+            )
+        }
     }
 }
 
 @Composable
 fun Tablero(tablero: List<List<CasillaEstado>>, onClickCasilla: (Int, Int) -> Unit){
 
-    Column(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(5.dp),
+        contentAlignment = Alignment.TopCenter
     ) {
 
-        tablero.forEachIndexed { filaIndex, fila ->
-            Row {
-                fila.forEachIndexed { colIndex, casilla ->
+        val filas = tablero.size
+        val columnas = tablero.firstOrNull()?.size ?: 1
 
-                    Casilla(
-                        estado = casilla,
-                        fila = filaIndex,
-                        columna = colIndex,
-                        onClickCasilla = onClickCasilla
-                    )
+        val mida = minOf(
+            maxWidth / columnas,
+            maxHeight / filas
+        )
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ){
+            tablero.forEachIndexed { filaIndex, fila ->
+                Row {
+                    fila.forEachIndexed { colIndex, casilla ->
+                        Casilla(
+                            estado = casilla,
+                            fila = filaIndex,
+                            columna = colIndex,
+                            size = mida,
+                            onClickCasilla = onClickCasilla
+                        )
+                    }
                 }
             }
         }
     }
 }
-
-@Composable
 @OptIn(ExperimentalFoundationApi::class)
-fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickCasilla: (Int, Int) -> Unit) {
+@Composable
+fun Casilla(estado: CasillaEstado, fila: Int, columna: Int, size: Dp, onClickCasilla: (Int, Int) -> Unit){
 
     Box(
         modifier = Modifier
+            .size(size)
             .padding(2.dp)
-            .size(50.dp)
             .background(
                 if (estado.descubierta)
                     colorResource(id = R.color.white)
@@ -779,11 +799,14 @@ fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickCasilla: (Int, I
 
         if (estado.tieneBandera) {
             Text(text = stringResource(R.string.bandera))
-        } else if(estado.descubierta) {
+        } else if (estado.descubierta) {
             if (estado.esMina) {
                 Text(text = stringResource(R.string.mina))
             } else if (estado.minasAlrededor > 0) {
-                Text(estado.minasAlrededor.toString(),color = colorNumero(estado.minasAlrededor))
+                Text(
+                    estado.minasAlrededor.toString(),
+                    color = colorNumero(estado.minasAlrededor)
+                )
             }
         }
     }
