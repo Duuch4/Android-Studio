@@ -38,5 +38,6 @@
     <string name="snackbar_perdida">Has perdido, inténtalo de nuevo!</string>
     <string name="snackbar_victoria">Has ganado enhorabuena!</string>
     <string name="snackbar_tiempo">Tiempo agotado, repite suerte!</string>
+    <string name="bandera">🚩</string>
 
 </resources>

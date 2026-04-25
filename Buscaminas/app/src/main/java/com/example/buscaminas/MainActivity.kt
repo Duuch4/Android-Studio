@@ -8,10 +8,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -446,6 +447,8 @@ class CasillaEstado {
     var descubierta by mutableStateOf(false)
     var esMina by mutableStateOf(false)
     var minasAlrededor by mutableIntStateOf(0)
+
+    var tieneBandera by mutableStateOf(false)
 }
 
 @Composable
@@ -604,6 +607,7 @@ fun Tablero(tablero: List<List<CasillaEstado>>, onClickCasilla: (Int, Int) -> Un
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickCasilla: (Int, Int) -> Unit) {
 
     Box(
@@ -616,12 +620,24 @@ fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickCasilla: (Int, I
                 else
                     colorResource(id = R.color.purple_700)
             )
-            .clickable(enabled = !estado.descubierta) {
-                onClickCasilla(fila, columna)
-            },
+            .combinedClickable(
+                onClick = {
+                    if (!estado.descubierta && !estado.tieneBandera) {
+                        onClickCasilla(fila, columna)
+                    }
+                },
+                onLongClick = {
+                    if (!estado.descubierta) {
+                        estado.tieneBandera = !estado.tieneBandera
+                    }
+                }
+            ),
         contentAlignment = Alignment.Center
     ) {
-        if (estado.descubierta) {
+
+        if (estado.tieneBandera) {
+            Text(text = stringResource(R.string.bandera))
+        } else if(estado.descubierta) {
             if (estado.esMina) {
                 Text(text = stringResource(R.string.mina))
             } else if (estado.minasAlrededor > 0) {
