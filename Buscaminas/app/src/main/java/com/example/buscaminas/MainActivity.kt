@@ -113,6 +113,7 @@ fun MyApp() {
             "Configuracion" -> Configuracion(
                 modifier = Modifier.padding(innerPadding),
                 onEmpezar = {
+                    viewModel.resetPartida()
                     viewModel.configPartida = it
                     pantallaActual = "Juego"
                 }
@@ -468,11 +469,13 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
     val estadoPartida = viewModel.estadoPartida
     val totalMinas = viewModel.totalMinas
 
-    LaunchedEffect(config) {
-        viewModel.iniciarPartida(config)
+    LaunchedEffect(Unit) {
+        if (viewModel.tablero.isEmpty()) {
+            viewModel.iniciarPartida(config)
 
-        if (config.tiempoActivo) {
-            viewModel.iniciarTiempo()
+            if (config.tiempoActivo) {
+                viewModel.iniciarTiempo()
+            }
         }
     }
 

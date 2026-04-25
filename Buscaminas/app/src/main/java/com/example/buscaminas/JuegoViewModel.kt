@@ -158,5 +158,13 @@ class JuegoViewModel : ViewModel() {
         estadoPartida = null
     }
 
+    fun resetPartida() {
+        tablero = emptyList()
+        estadoPartida = null
+        filaMina = -1
+        columnaMina = -1
+        detenerTiempo()
+    }
+
 
 }
