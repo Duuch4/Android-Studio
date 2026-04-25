@@ -39,6 +39,7 @@ class JuegoViewModel : ViewModel() {
     var columnaMina by mutableIntStateOf(-1)
         private set
 
+    var configPartida: CfgPartida? by mutableStateOf(null)
 
     fun iniciarPartida(config: CfgPartida) {
 

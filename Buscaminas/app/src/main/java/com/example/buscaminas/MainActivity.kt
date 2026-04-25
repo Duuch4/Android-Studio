@@ -79,12 +79,13 @@ class MainActivity : ComponentActivity() {
 fun MyApp() {
 
     var pantallaActual by rememberSaveable { mutableStateOf("Principal") }
-    var configPartida by remember { mutableStateOf<CfgPartida?>(null) }
     var resultado by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
     var tipoFin by rememberSaveable { mutableStateOf<TipoFin?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
-    val viewModel: JuegoViewModel = viewModel(key = pantallaActual)
+    val viewModel: JuegoViewModel = viewModel()
+    val configPartida = viewModel.configPartida
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -112,7 +113,7 @@ fun MyApp() {
             "Configuracion" -> Configuracion(
                 modifier = Modifier.padding(innerPadding),
                 onEmpezar = {
-                    configPartida = it
+                    viewModel.configPartida = it
                     pantallaActual = "Juego"
                 }
             )
