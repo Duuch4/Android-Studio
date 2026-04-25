@@ -123,6 +123,7 @@ fun MyApp() {
             "Juego" -> {
                 configPartida?.let { config ->
                     Juego(
+                        modifier = Modifier.padding(innerPadding),
                         config = config,
                         viewModel = viewModel,
                         onFinPartida = { res, tipo ->
@@ -302,142 +303,286 @@ data class CfgPartida(
     val tiempoActivo: Boolean
 )
 @Composable
-fun Configuracion(modifier: Modifier = Modifier, onEmpezar: (CfgPartida) -> Unit) {
+fun Configuracion(
+    modifier: Modifier = Modifier,
+    onEmpezar: (CfgPartida) -> Unit
+) {
 
     var alias by rememberSaveable { mutableStateOf("") }
     var medida by rememberSaveable { mutableIntStateOf(7) }
     var tiempoActivado by rememberSaveable { mutableStateOf(false) }
     var porcentajeMinas by rememberSaveable { mutableIntStateOf(25) }
+
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
+    Column(modifier = modifier.fillMaxSize()) {
 
         Header(
             titulo = stringResource(id = R.string.header_config),
             icono = R.drawable.icono_mina
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(15.dp)
-        ) {
+        if (isLandscape) {
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(15.dp)
+            ) {
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(id = R.drawable.alias),
-                    contentDescription = null,
-                    modifier = Modifier.size(25.dp)
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Text(stringResource(id = R.string.label_alias))
-            }
+                Row(modifier = Modifier.fillMaxWidth()) {
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            OutlinedTextField(
-                value = alias,
-                onValueChange = { alias = it },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(id = R.drawable.graella),
-                    contentDescription = null,
-                    modifier = Modifier.size(25.dp)
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Text(stringResource(id = R.string.graella))
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                listOf(7, 6, 5).forEach { value ->
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(end = 10.dp)
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        RadioButton(
-                            selected = medida == value,
-                            onClick = { medida = value }
+                        Image(
+                            painter = painterResource(R.drawable.alias),
+                            contentDescription = null,
+                            modifier = Modifier.size(25.dp)
                         )
-                        Text(text = value.toString())
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(stringResource(R.string.label_alias))
+                    }
+
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.tiempo),
+                            contentDescription = null,
+                            modifier = Modifier.size(25.dp)
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(stringResource(R.string.control_tiempo))
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
-            Column {
-                Text(stringResource(id = R.string.control_tiempo))
+                Row(modifier = Modifier.fillMaxWidth()) {
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    OutlinedTextField(
+                        value = alias,
+                        onValueChange = { alias = it },
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Checkbox(
+                            checked = tiempoActivado,
+                            onCheckedChange = { tiempoActivado = it }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Row(modifier = Modifier.weight(1f)) {
+
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(R.drawable.graella),
+                                contentDescription = null,
+                                modifier = Modifier.size(25.dp)
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(stringResource(R.string.graella))
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Row {
+                            listOf(7, 6, 5).forEach { value ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(end = 15.dp)
+                                ) {
+                                    RadioButton(
+                                        selected = medida == value,
+                                        onClick = { medida = value }
+                                    )
+                                    Text(value.toString())
+                                }
+                            }
+                        }
+                    }
+
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(R.drawable.icono_mina),
+                                contentDescription = null,
+                                modifier = Modifier.size(25.dp)
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(stringResource(R.string.porc_minas))
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Row {
+                            listOf(15, 25, 35).forEach { value ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(end = 15.dp)
+                                ) {
+                                    RadioButton(
+                                        selected = porcentajeMinas == value,
+                                        onClick = { porcentajeMinas = value }
+                                    )
+                                    Text(value.toString())
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        onEmpezar(
+                            CfgPartida(
+                                alias = alias,
+                                filas = medida,
+                                columnas = medida,
+                                porcentajeMinas = porcentajeMinas,
+                                tiempoActivo = tiempoActivado
+                            )
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
+                    Text(stringResource(R.string.boton_empezar2))
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(15.dp)
+            ) {
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
-                        painter = painterResource(id = R.drawable.tiempo),
+                        painter = painterResource(R.drawable.alias),
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(stringResource(R.string.label_alias))
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                OutlinedTextField(
+                    value = alias,
+                    onValueChange = { alias = it },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(R.drawable.graella),
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(stringResource(R.string.graella))
+                }
+
+                Row {
+                    listOf(7, 6, 5).forEach { value ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(end = 10.dp)
+                        ) {
+                            RadioButton(
+                                selected = medida == value,
+                                onClick = { medida = value }
+                            )
+                            Text(value.toString())
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(stringResource(R.string.control_tiempo))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(R.drawable.tiempo),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp)
                     )
-
                     Checkbox(
                         checked = tiempoActivado,
                         onCheckedChange = { tiempoActivado = it }
                     )
                 }
-            }
 
-            Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(id = R.drawable.icono_mina),
-                    contentDescription = null,
-                    modifier = Modifier.size(25.dp)
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Text(stringResource(id = R.string.porc_minas))
-            }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(R.drawable.icono_mina),
+                        contentDescription = null,
+                        modifier = Modifier.size(25.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(stringResource(R.string.porc_minas))
+                }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                listOf(15, 25, 35).forEach { value ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(end = 10.dp)
-                    ) {
-                        RadioButton(
-                            selected = porcentajeMinas == value,
-                            onClick = { porcentajeMinas = value }
-                        )
-                        Text(text = value.toString())
+                Row {
+                    listOf(15, 25, 35).forEach { value ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(end = 10.dp)
+                        ) {
+                            RadioButton(
+                                selected = porcentajeMinas == value,
+                                onClick = { porcentajeMinas = value }
+                            )
+                            Text(value.toString())
+                        }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(15.dp))
 
-            Button(
-                onClick = {
-                    onEmpezar(
-                        CfgPartida(
-                            alias = alias,
-                            filas = medida,
-                            columnas = medida,
-                            porcentajeMinas = porcentajeMinas,
-                            tiempoActivo = tiempoActivado
+                Button(
+                    onClick = {
+                        onEmpezar(
+                            CfgPartida(
+                                alias = alias,
+                                filas = medida,
+                                columnas = medida,
+                                porcentajeMinas = porcentajeMinas,
+                                tiempoActivo = tiempoActivado
+                            )
                         )
-                    )
-                },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text(text = stringResource(id = R.string.boton_empezar2))
+                    },
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text(stringResource(R.string.boton_empezar2))
+                }
             }
         }
     }
@@ -541,7 +686,7 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
         }
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()){
 
         Header(
             titulo = stringResource(R.string.partida_marcha),
@@ -555,9 +700,7 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Text(text = stringResource(R.string.casillas_restantes, casillasRestantes))
-
             if (config.tiempoActivo) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
@@ -570,7 +713,6 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
                 }
             }
         }
-
         Tablero(
             tablero = tablero,
             onClickCasilla = { fila, columna ->
@@ -868,6 +1010,14 @@ fun ConfiguracionPreview() {
     }
 }
 
+@Preview(showBackground = true, device = "spec:width=800dp,height=400dp,orientation=landscape")
+@Composable
+fun ConfiguracionLandscapePreview() {
+    BuscaminasTheme {
+        Configuracion(onEmpezar = {})
+    }
+}
+
 @SuppressLint("ViewModelConstructorInComposable")
 @Preview(showBackground = true)
 @Composable
@@ -892,6 +1042,21 @@ fun JuegoPreview() {
 @Preview(showBackground = true)
 @Composable
 fun ResultadosPreview() {
+    val snackbarHostState = SnackbarHostState()
+    BuscaminasTheme {
+        Resultados(
+            resultado = "Partida de prueba",
+            tipoFin = TipoFin.MINA,
+            snackbarHostState = snackbarHostState,
+            onNuevaPartida = {},
+            onSalir = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, device = "spec:width=800dp,height=400dp,orientation=landscape")
+@Composable
+fun ResultadosLandscapePreview() {
     val snackbarHostState = SnackbarHostState()
     BuscaminasTheme {
         Resultados(
