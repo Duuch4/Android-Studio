@@ -1,9 +1,9 @@
 package com.example.buscaminas
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
-import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -57,7 +57,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.example.buscaminas.ui.theme.BuscaminasTheme
-import kotlinx.coroutines.delay
 import java.util.Locale
 import androidx.lifecycle.viewmodel.compose.viewModel
 enum class TipoFin {
@@ -80,11 +79,12 @@ class MainActivity : ComponentActivity() {
 fun MyApp() {
 
     var pantallaActual by rememberSaveable { mutableStateOf("Principal") }
-    var configPartida by rememberSaveable { mutableStateOf<CfgPartida?>(null) }
+    var configPartida by remember { mutableStateOf<CfgPartida?>(null) }
     var resultado by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
     var tipoFin by rememberSaveable { mutableStateOf<TipoFin?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
+    val viewModel: JuegoViewModel = viewModel(key = pantallaActual)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -121,6 +121,7 @@ fun MyApp() {
                 configPartida?.let { config ->
                     Juego(
                         config = config,
+                        viewModel = viewModel,
                         onFinPartida = { res, tipo ->
                             resultado = res
                             tipoFin = tipo
@@ -458,61 +459,35 @@ fun colorNumero(minas: Int) = when (minas) {
     else -> colorResource(R.color.num_8)
 }
 @Composable
-fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (String, TipoFin) -> Unit) {
+fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (String, TipoFin) -> Unit, viewModel: JuegoViewModel) {
     val context = LocalContext.current
 
-    val viewModel: JuegoViewModel = viewModel()
-
     val tablero = viewModel.tablero
-    
-    val totalMinas = tablero.flatten().count { it.esMina }
-    val casillasDescubiertas = tablero.flatten().count { it.descubierta }
-
-    val totalCasillas = config.filas * config.columnas
-    val casillasRestantes = totalCasillas - casillasDescubiertas
-
     val tiempoRestante = viewModel.tiempoRestante
+    val estadoPartida = viewModel.estadoPartida
+    val totalMinas = viewModel.totalMinas
 
     LaunchedEffect(config) {
-
         viewModel.iniciarPartida(config)
 
         if (config.tiempoActivo) {
-            viewModel.iniciarTiempo {
-
-                val casillasDescubiertas = viewModel.tablero.flatten().count { it.descubierta }
-                val totalCasillas = config.filas * config.columnas
-                val casillasRestantes = totalCasillas - casillasDescubiertas
-
-                val logBase = context.getString(
-                    R.string.log_base,
-                    config.alias,
-                    config.filas,
-                    config.columnas,
-                    viewModel.tablero.flatten().count { it.esMina },
-                    config.porcentajeMinas,
-                    casillasDescubiertas,
-                    viewModel.tiempoRestante
-                )
-
-                val mensaje = context.getString(
-                    R.string.mensaje_tiempoperdida,
-                    casillasRestantes
-                )
-
-                onFinPartida(logBase + "\n" + mensaje, TipoFin.TIEMPO)
-            }
+            viewModel.iniciarTiempo()
         }
     }
 
-    val casillasSinMinas = tablero.flatten().count { !it.esMina }
-    val casillasDescubiertasSinMinas = tablero.flatten().count { it.descubierta && !it.esMina }
+    val totalCasillas = config.filas * config.columnas
+    val casillasDescubiertas = tablero.flatten().count { it.descubierta }
+    val casillasRestantes = totalCasillas - casillasDescubiertas
 
 
-    LaunchedEffect(tablero,casillasDescubiertasSinMinas) {
-        if (tablero.isNotEmpty() && casillasDescubiertasSinMinas == casillasSinMinas) {
+    LaunchedEffect(estadoPartida) {
+        estadoPartida?.let { tipo ->
 
-            val casillasDescubiertas = tablero.flatten().count { it.descubierta }
+            val tableroActual = viewModel.tablero
+
+            val descubiertas = tableroActual.flatten().count { it.descubierta }
+            val total = config.filas * config.columnas
+            val restantes = total - descubiertas
 
             val logBase = context.getString(
                 R.string.log_base,
@@ -521,23 +496,36 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
                 config.columnas,
                 totalMinas,
                 config.porcentajeMinas,
-                casillasDescubiertas,
+                descubiertas,
                 tiempoRestante
             )
 
-            val mensaje = context.getString(
-                R.string.mensaje_victoria,
-                tiempoRestante
-            )
-            viewModel.detenerTiempo()
-            onFinPartida(logBase + "\n" + mensaje, TipoFin.VICTORIA)
+            val mensaje = when (tipo) {
+                TipoFin.VICTORIA -> context.getString(
+                    R.string.mensaje_victoria,
+                    tiempoRestante
+                )
+
+                TipoFin.MINA -> context.getString(
+                    R.string.mensaje_minaperdida,
+                    viewModel.filaMina,
+                    viewModel.columnaMina,
+                    restantes
+                )
+
+                TipoFin.TIEMPO -> context.getString(
+                    R.string.mensaje_tiempoperdida,
+                    restantes
+                )
+            }
+
+            onFinPartida(logBase + "\n" + mensaje, tipo)
+
+            viewModel.consumirEstadoPartida()
         }
     }
 
-
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
+    Column(modifier = modifier.fillMaxSize()) {
 
         Header(
             titulo = stringResource(R.string.partida_marcha),
@@ -569,39 +557,15 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida,onFinPartida: (Strin
 
         Tablero(
             tablero = tablero,
-            onClickMina = { fila, columna ->
-
-                val casillasDescubiertas = tablero.flatten().count { it.descubierta }
-                val casillasRestantes = totalCasillas - casillasDescubiertas
-                val mediaPlayer = MediaPlayer.create(context, R.raw.explosion)
-                mediaPlayer.start()
-
-                val logBase = context.getString(
-                    R.string.log_base,
-                    config.alias,
-                    config.filas,
-                    config.columnas,
-                    totalMinas,
-                    config.porcentajeMinas,
-                    casillasDescubiertas,
-                    tiempoRestante
-                )
-
-                val mensaje = context.getString(
-                    R.string.mensaje_minaperdida,
-                    fila,
-                    columna,
-                    casillasRestantes
-                )
-                viewModel.detenerTiempo()
-                onFinPartida(logBase + "\n" + mensaje, TipoFin.MINA)
+            onClickCasilla = { fila, columna ->
+                viewModel.descubrirCasilla(fila, columna)
             }
         )
     }
 }
 
 @Composable
-fun Tablero(tablero: List<List<CasillaEstado>>, onClickMina: (Int, Int) -> Unit){
+fun Tablero(tablero: List<List<CasillaEstado>>, onClickCasilla: (Int, Int) -> Unit){
 
     Column(
         modifier = Modifier
@@ -618,7 +582,7 @@ fun Tablero(tablero: List<List<CasillaEstado>>, onClickMina: (Int, Int) -> Unit)
                         estado = casilla,
                         fila = filaIndex,
                         columna = colIndex,
-                        onClickMina = onClickMina
+                        onClickCasilla = onClickCasilla
                     )
                 }
             }
@@ -627,7 +591,7 @@ fun Tablero(tablero: List<List<CasillaEstado>>, onClickMina: (Int, Int) -> Unit)
 }
 
 @Composable
-fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickMina: (Int, Int) -> Unit) {
+fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickCasilla: (Int, Int) -> Unit) {
 
     Box(
         modifier = Modifier
@@ -640,10 +604,7 @@ fun Casilla(estado: CasillaEstado,fila: Int,columna: Int,onClickMina: (Int, Int)
                     colorResource(id = R.color.purple_700)
             )
             .clickable(enabled = !estado.descubierta) {
-                estado.descubierta = true
-                if (estado.esMina) {
-                    onClickMina(fila, columna)
-                }
+                onClickCasilla(fila, columna)
             },
         contentAlignment = Alignment.Center
     ) {
@@ -878,9 +839,12 @@ fun ConfiguracionPreview() {
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview(showBackground = true)
 @Composable
 fun JuegoPreview() {
+    val fakeViewModel = JuegoViewModel()
+
     BuscaminasTheme {
         Juego(
             config = CfgPartida(
@@ -890,6 +854,7 @@ fun JuegoPreview() {
                 porcentajeMinas = 25,
                 tiempoActivo = true
             ),
+            viewModel = fakeViewModel,
             onFinPartida = { _, _ -> }
         )
     }

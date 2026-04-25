@@ -1,6 +1,7 @@
 package com.example.buscaminas
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -21,25 +22,42 @@ class JuegoViewModel : ViewModel() {
         const val TIEMPO_INICIAL = 25
     }
 
-    var tiempoRestante by mutableStateOf(TIEMPO_INICIAL)
+    var tiempoRestante by mutableIntStateOf(TIEMPO_INICIAL)
+        private set
+
+    var estadoPartida by mutableStateOf<TipoFin?>(null)
         private set
 
     private var contadorTiempo: Job? = null
 
+    var totalMinas by mutableIntStateOf(0)
+        private set
+
+    var filaMina by mutableIntStateOf(-1)
+        private set
+
+    var columnaMina by mutableIntStateOf(-1)
+        private set
+
+
     fun iniciarPartida(config: CfgPartida) {
 
         detenerTiempo()
+
         configActual = config
         tiempoRestante = TIEMPO_INICIAL
+        estadoPartida = null
+        filaMina = -1
+        columnaMina = -1
+
+        val totalCasillas = config.filas * config.columnas
+        totalMinas = (totalCasillas * config.porcentajeMinas) / 100
 
         val tablero2 = List(config.filas) {
             MutableList(config.columnas) {
                 CasillaEstado()
             }
         }
-
-        val totalCasillas = config.filas * config.columnas
-        val totalMinas = (totalCasillas * config.porcentajeMinas) / 100
 
         repeat(totalMinas) {
             var fila: Int
@@ -86,9 +104,37 @@ class JuegoViewModel : ViewModel() {
         tablero = tablero2
     }
 
-    fun iniciarTiempo(onFin: () -> Unit) {
+    fun descubrirCasilla(fila: Int, columna: Int) {
+        val casilla = tablero[fila][columna]
+
+        if (casilla.descubierta) return
+
+        casilla.descubierta = true
+
+        if (casilla.esMina) {
+            filaMina = fila
+            columnaMina = columna
+
+            detenerTiempo()
+            estadoPartida = TipoFin.MINA
+            return
+        }
+
+        comprobarVictoria()
+    }
+    private fun comprobarVictoria() {
+        val casillasSinMinas = tablero.flatten().count { !it.esMina }
+        val descubiertas = tablero.flatten().count { it.descubierta && !it.esMina }
+
+        if (descubiertas == casillasSinMinas) {
+            detenerTiempo()
+            estadoPartida = TipoFin.VICTORIA
+        }
+    }
+    fun iniciarTiempo() {
 
         if (contadorTiempo?.isActive == true) return
+        if (estadoPartida != null) return //Si ha terminado que pare
 
         contadorTiempo = viewModelScope.launch {
 
@@ -99,11 +145,17 @@ class JuegoViewModel : ViewModel() {
                 tiempoRestante--
             }
 
-            onFin()
+            estadoPartida = TipoFin.TIEMPO
         }
     }
 
     fun detenerTiempo() {
         contadorTiempo?.cancel()
     }
+
+    fun consumirEstadoPartida() {
+        estadoPartida = null
+    }
+
+
 }
