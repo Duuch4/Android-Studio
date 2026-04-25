@@ -488,10 +488,19 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
         estadoPartida?.let { tipo ->
 
             val tableroActual = viewModel.tablero
-
             val descubiertas = tableroActual.flatten().count { it.descubierta }
             val total = config.filas * config.columnas
             val restantes = total - descubiertas
+
+            if (tipo == TipoFin.MINA) {
+                val mediaPlayer = android.media.MediaPlayer.create(context,R.raw.explosion)
+                mediaPlayer.start()
+
+                mediaPlayer.setOnCompletionListener {
+                    it.release()
+                }
+            }
+
 
             val logBase = context.getString(
                 R.string.log_base,
