@@ -740,18 +740,21 @@ fun Tablero(tablero: List<List<CasillaEstado>>, onClickCasilla: (Int, Int) -> Un
         contentAlignment = Alignment.TopCenter
     ) {
 
+        val ancho = this.maxWidth
+        val alto = this.maxHeight
+
         val filas = tablero.size
         val columnas = tablero.firstOrNull()?.size ?: 1
 
         val mida = minOf(
-            maxWidth / columnas,
-            maxHeight / filas
+            ancho / columnas,
+            alto / filas
         )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
-        ){
+        ) {
             tablero.forEachIndexed { filaIndex, fila ->
                 Row {
                     fila.forEachIndexed { colIndex, casilla ->
@@ -768,6 +771,7 @@ fun Tablero(tablero: List<List<CasillaEstado>>, onClickCasilla: (Int, Int) -> Un
         }
     }
 }
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Casilla(estado: CasillaEstado, fila: Int, columna: Int, size: Dp, onClickCasilla: (Int, Int) -> Unit){
