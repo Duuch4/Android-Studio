@@ -39,5 +39,6 @@
     <string name="snackbar_victoria">Has ganado enhorabuena!</string>
     <string name="snackbar_tiempo">Tiempo agotado, repite suerte!</string>
     <string name="bandera">🚩</string>
+    <string name="header_resultados">Resultados</string>
 
 </resources>

@@ -840,7 +840,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
     Column(modifier = modifier.fillMaxSize()) {
 
         Header(
-            titulo = "Resultados",
+            titulo = stringResource(id = R.string.header_resultados),
             icono = R.drawable.icono_mina
         )
 
