@@ -66,6 +66,11 @@ enum class TipoFin {
     VICTORIA, MINA, TIEMPO
 }
 
+fun emailValido(email: String): Boolean {
+    return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+}
+
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -305,15 +310,13 @@ data class CfgPartida(
     val tiempoActivo: Boolean
 )
 @Composable
-fun Configuracion(
-    modifier: Modifier = Modifier,
-    onEmpezar: (CfgPartida) -> Unit
-) {
+fun Configuracion(modifier: Modifier = Modifier, onEmpezar: (CfgPartida) -> Unit) {
 
     var alias by rememberSaveable { mutableStateOf("") }
     var medida by rememberSaveable { mutableIntStateOf(7) }
     var tiempoActivado by rememberSaveable { mutableStateOf(false) }
     var porcentajeMinas by rememberSaveable { mutableIntStateOf(25) }
+    var errorAlias by remember { mutableStateOf(false) }
 
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -368,8 +371,12 @@ fun Configuracion(
 
                     OutlinedTextField(
                         value = alias,
-                        onValueChange = { alias = it },
-                        modifier = Modifier.weight(1f)
+                        onValueChange = {
+                            alias = it
+                            errorAlias = false
+                        },
+                        isError = errorAlias,
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     Box(
@@ -455,6 +462,9 @@ fun Configuracion(
 
                 Button(
                     onClick = {
+                        if (alias.isBlank()) {
+                            errorAlias = true
+                        } else {
                         onEmpezar(
                             CfgPartida(
                                 alias = alias,
@@ -464,7 +474,7 @@ fun Configuracion(
                                 tiempoActivo = tiempoActivado
                             )
                         )
-                    },
+                    }},
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(stringResource(R.string.boton_empezar2))
@@ -493,7 +503,11 @@ fun Configuracion(
 
                 OutlinedTextField(
                     value = alias,
-                    onValueChange = { alias = it },
+                    onValueChange = {
+                        alias = it
+                        errorAlias = false
+                    },
+                    isError = errorAlias,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -571,17 +585,20 @@ fun Configuracion(
 
                 Button(
                     onClick = {
-                        onEmpezar(
-                            CfgPartida(
-                                alias = alias,
-                                filas = medida,
-                                columnas = medida,
-                                porcentajeMinas = porcentajeMinas,
-                                tiempoActivo = tiempoActivado
+                        if (alias.isBlank()) {
+                            errorAlias = true
+                        } else {
+                            onEmpezar(
+                                CfgPartida(
+                                    alias = alias,
+                                    filas = medida,
+                                    columnas = medida,
+                                    porcentajeMinas = porcentajeMinas,
+                                    tiempoActivo = tiempoActivado
+                                )
                             )
-                        )
-                    },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                        }},
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(stringResource(R.string.boton_empezar2))
                 }
@@ -827,6 +844,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
     }
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    var errorEmail by remember { mutableStateOf(false) }
 
     LaunchedEffect(tipoFin) {
         val mensaje = when (tipoFin) {
@@ -887,7 +905,11 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
 
                         OutlinedTextField(
                             value = email,
-                            onValueChange = { email = it },
+                            onValueChange = {
+                                email = it
+                                errorEmail = false
+                            },
+                            isError = errorEmail,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .border(1.dp, colorResource(id = android.R.color.black))
@@ -1006,7 +1028,11 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
 
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = {
+                        email = it
+                        errorEmail = false
+                    },
+                    isError = errorEmail,
                     modifier = Modifier.fillMaxWidth()
                         .border(1.dp, colorResource(id = android.R.color.black))
                 )
@@ -1015,6 +1041,9 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
 
                 Button(
                     onClick = {
+                        if (!emailValido(email)) {
+                            errorEmail = true
+                        } else {
                         val intent = Intent(Intent.ACTION_SENDTO).apply {
                             data = "mailto:".toUri()
                             putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
@@ -1026,7 +1055,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
                         }
 
                         context.startActivity(intent)
-                    },
+                    }},
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(stringResource(id = R.string.email_env))
@@ -1053,7 +1082,6 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
         }
     }
 }
-
 
 @Composable
 fun Snackbar(mensaje: String, tipoFin: TipoFin?) {
