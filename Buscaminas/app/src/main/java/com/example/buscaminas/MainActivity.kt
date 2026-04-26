@@ -821,6 +821,8 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
         val sdf = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
         sdf.format(java.util.Date())
     }
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     LaunchedEffect(tipoFin) {
         val mensaje = when (tipoFin) {
@@ -835,109 +837,219 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
         }
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
+    Column(modifier = modifier.fillMaxSize()) {
 
         Header(
             titulo = "Resultados",
             icono = R.drawable.icono_mina
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(15.dp)
-        ) {
+        if (isLandscape) {
 
-            Text(
-                text = stringResource(id = R.string.resultados_partida),
-                fontWeight = FontWeight.Bold,
-                fontSize = 15.sp
-            )
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            Text(text = stringResource(id = R.string.dia_hora))
-
-            Box(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(colorResource(id = android.R.color.white))
-                    .border(1.dp, colorResource(id = android.R.color.black))
-                    .padding(10.dp)
+                    .fillMaxSize()
+                    .padding(15.dp)
             ) {
-                Text(fechaActual)
-            }
 
-            Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = stringResource(id = R.string.resultados_partida),
+                    fontWeight = FontWeight.Bold
+                )
 
-            Text(text = stringResource(id = R.string.valores_log))
+                Spacer(modifier = Modifier.height(5.dp))
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(colorResource(id = android.R.color.white))
-                    .border(1.dp, colorResource(id = android.R.color.black))
-                    .padding(10.dp)
-            ) {
-                Text(resultado)
-            }
+                Row(modifier = Modifier.fillMaxWidth()) {
 
-            Spacer(modifier = Modifier.height(10.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(stringResource(id = R.string.dia_hora))
 
-            Text(text = stringResource(id = R.string.email_res))
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(1.dp, colorResource(id = android.R.color.black))
-            )
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            Button(
-                onClick = {
-                    val intent = Intent(Intent.ACTION_SENDTO).apply {
-                        data = "mailto:".toUri()
-                        putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
-                        putExtra(
-                            Intent.EXTRA_SUBJECT,
-                            context.getString(R.string.asunto_email, fechaActual)
-                        )
-                        putExtra(Intent.EXTRA_TEXT, resultado)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(45.dp)
+                                .border(1.dp, colorResource(id = android.R.color.black))
+                                .padding(10.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Text(fechaActual)
+                        }
                     }
 
-                    context.startActivity(intent)
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = stringResource(id = R.string.email_env))
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(stringResource(id = R.string.email_res))
+
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, colorResource(id = android.R.color.black))
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Text(stringResource(id = R.string.valores_log))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1.5f)
+                        .background(colorResource(id = android.R.color.white))
+                        .border(1.dp, colorResource(id = android.R.color.black))
+                        .padding(10.dp)
+                ) {
+                    Text(
+                        text = resultado,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+
+                    Button(
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                data = "mailto:".toUri()
+                                putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+                                putExtra(
+                                    Intent.EXTRA_SUBJECT,
+                                    context.getString(R.string.asunto_email, fechaActual)
+                                )
+                                putExtra(Intent.EXTRA_TEXT, resultado)
+                            }
+                            context.startActivity(intent)
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(id = R.string.email_env))
+                    }
+
+                    Button(
+                        onClick = onNuevaPartida,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(id = R.string.nueva_partida))
+                    }
+
+                    Button(
+                        onClick = onSalir,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(id = R.string.boton_salir))
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+        } else {
 
-            Button(
-                onClick = onNuevaPartida,
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(15.dp)
             ) {
-                Text(text = stringResource(id = R.string.nueva_partida))
-            }
 
-            Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(15.dp))
 
-            Button(
-                onClick = onSalir,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = stringResource(id = R.string.boton_salir))
+                Text(
+                    text = stringResource(id = R.string.resultados_partida),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                Text(stringResource(id = R.string.dia_hora))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(colorResource(id = android.R.color.white))
+                        .border(1.dp, colorResource(id = android.R.color.black))
+                        .padding(10.dp)
+                ) {
+                    Text(fechaActual)
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(stringResource(id = R.string.valores_log))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(colorResource(id = android.R.color.white))
+                        .border(1.dp, colorResource(id = android.R.color.black))
+                        .padding(10.dp)
+                ) {
+                    Text(resultado)
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(stringResource(id = R.string.email_res))
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    modifier = Modifier.fillMaxWidth()
+                        .border(1.dp, colorResource(id = android.R.color.black))
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                Button(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_SENDTO).apply {
+                            data = "mailto:".toUri()
+                            putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+                            putExtra(
+                                Intent.EXTRA_SUBJECT,
+                                context.getString(R.string.asunto_email, fechaActual)
+                            )
+                            putExtra(Intent.EXTRA_TEXT, resultado)
+                        }
+
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(id = R.string.email_env))
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Button(
+                    onClick = onNuevaPartida,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(id = R.string.nueva_partida))
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Button(
+                    onClick = onSalir,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(id = R.string.boton_salir))
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun Snackbar(mensaje: String, tipoFin: TipoFin?) {
