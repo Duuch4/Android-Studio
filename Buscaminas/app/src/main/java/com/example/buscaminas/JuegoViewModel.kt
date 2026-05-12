@@ -21,6 +21,17 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
 
     private val repository = PartidaRepository(partidaDao)
 
+    var historialPartidas by mutableStateOf<List<PartidaEntity>>(emptyList())
+        private set
+
+    fun cargarPartidas() {
+
+        viewModelScope.launch {
+
+            historialPartidas = repository.obtenerPartidas()
+        }
+    }
+
     var tablero by mutableStateOf<List<List<CasillaEstado>>>(emptyList())
         private set
 

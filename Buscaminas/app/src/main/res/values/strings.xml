@@ -40,4 +40,13 @@
     <string name="snackbar_tiempo">Tiempo agotado, repite suerte!</string>
     <string name="bandera">🚩</string>
     <string name="header_resultados">Resultados</string>
+    <string name="boton_historial">Historial Partidas</string>
+    <string name="log_alias">Alias: %1$s</string>
+    <string name="log_fecha">Fecha: %1$s</string>
+    <string name="log_resultado">Resultado: %1$s</string>
+    <string name="log_tablero">Tablero: %1$dx%2$d</string>
+    <string name="log_minas">Minas: %1$d</string>
+    <string name="log_tiempo_restante">Tiempo restante: %1$d</string>
+    <string name="logMensaje">No hay partidas guardadas</string>
+
 </resources>

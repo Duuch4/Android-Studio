@@ -1,6 +1,5 @@
 package com.example.buscaminas
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
@@ -109,8 +108,8 @@ fun MyApp() {
                 modifier = Modifier.padding(innerPadding),
                 onIrAyuda = { pantallaActual = "Ayuda" },
                 onEmpezarpartida = { pantallaActual = "Configuracion" },
-                onSalir = {(context as? Activity)?.finish() }
-
+                onSalir = {(context as? Activity)?.finish() },
+                onIrHistorial = { pantallaActual = "Historial" },
             )
 
             "Ayuda" -> Ayuda(
@@ -154,11 +153,21 @@ fun MyApp() {
                     onSalir = {(context as? Activity)?.finish() }
                 )
             }
+
+            "Historial" -> {
+                Historial(
+                    modifier = Modifier.padding(innerPadding),
+                    viewModel = viewModel,
+                    onVolver = {
+                        pantallaActual = "Principal"
+                    }
+                )
+            }
         }
     }
 }
 @Composable
-fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarpartida: () -> Unit,onSalir: () -> Unit) {
+fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarpartida: () -> Unit,onSalir: () -> Unit,onIrHistorial: () -> Unit) {
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -181,6 +190,10 @@ fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarparti
 
             ElevatedButton(onClick = onEmpezarpartida) {
                 Text(text = stringResource(id = R.string.boton_empezar))
+            }
+
+            ElevatedButton(onClick = onIrHistorial) {
+                Text(text = stringResource(id = R.string.boton_historial))
             }
 
             Button(onClick = onSalir) {
@@ -1089,6 +1102,78 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
 }
 
 @Composable
+fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onVolver: () -> Unit) {
+
+    val partidas = viewModel.historialPartidas
+
+    LaunchedEffect(Unit) {
+        viewModel.cargarPartidas()
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(15.dp)
+    ) {
+
+        Header(
+            titulo = stringResource(id = R.string.boton_historial),
+            icono = R.drawable.icono_mina
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ) {
+
+            if (partidas.isEmpty()) {
+
+                Text(
+                    text = stringResource(R.string.logMensaje),
+                    modifier = Modifier.padding(10.dp)
+                )
+
+            } else {
+
+                partidas.forEach { partida ->
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 10.dp)
+                            .border(
+                                1.dp,
+                                colorResource(android.R.color.black)
+                            )
+                            .padding(10.dp)
+                    ) {
+
+                        Column {
+                            Text(stringResource(R.string.log_alias, partida.alias))
+                            Text(stringResource(R.string.log_fecha, partida.fecha))
+                            Text(stringResource(R.string.log_resultado, partida.resultado))
+                            Text(stringResource(R.string.log_tablero, partida.filas, partida.columnas))
+                            Text(stringResource(R.string.log_minas, partida.totalMinas))
+                            Text(stringResource(R.string.tiempo_restante, partida.tiempoRestante))
+                        }
+                    }
+                }
+            }
+        }
+
+        Button(
+            onClick = onVolver,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(id = R.string.on_volver))
+        }
+    }
+}
+
+@Composable
 fun Snackbar(mensaje: String, tipoFin: TipoFin?) {
 
     val icono = when (tipoFin) {
@@ -1162,7 +1247,7 @@ fun Header(titulo: String, icono: Int) {
 @Composable
 fun PrincipalPreview() {
     BuscaminasTheme {
-        Principal(onIrAyuda = {},onEmpezarpartida = {},onSalir={})
+        Principal(onIrAyuda = {},onEmpezarpartida = {},onSalir={}, onIrHistorial = {})
     }
 }
 
@@ -1190,26 +1275,6 @@ fun ConfiguracionLandscapePreview() {
     }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-fun JuegoPreview() {
-    val fakeViewModel = JuegoViewModel(android.app.Application())
-
-    BuscaminasTheme {
-        Juego(
-            config = CfgPartida(
-                alias = "Albert",
-                filas = 5,
-                columnas = 5,
-                porcentajeMinas = 25,
-                tiempoActivo = true
-            ),
-            viewModel = fakeViewModel,
-            onFinPartida = { _, _ -> }
-        )
-    }
-}
 
 @Preview(showBackground = true)
 @Composable

@@ -41,4 +41,12 @@
     <string name="snackbar_tiempo">Time is up, try again!</string>
     <string name="bandera">🚩</string>
     <string name="header_resultados">Results</string>
+    <string name="boton_historial">Game History</string>
+    <string name="log_alias">Alias: %1$s</string>
+    <string name="log_fecha">Date: %1$s</string>
+    <string name="log_resultado">Result: %1$s</string>
+    <string name="log_tablero">Board: %1$dx%2$d</string>
+    <string name="log_minas">Mines: %1$d</string>
+    <string name="log_tiempo_restante">Remaining time: %1$d</string>
+    <string name="logMensaje">There are no saved games</string>
 </resources>

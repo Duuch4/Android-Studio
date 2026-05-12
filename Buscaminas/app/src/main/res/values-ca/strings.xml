@@ -41,4 +41,12 @@
     <string name="snackbar_tiempo">Temps esgotat, torna a provar!</string>
     <string name="bandera">🚩</string>
     <string name="header_resultados">Resultats</string>
+    <string name="boton_historial">Historial Partides</string>
+    <string name="log_alias">Àlies: %1$s</string>
+    <string name="log_fecha">Data: %1$s</string>
+    <string name="log_resultado">Resultat: %1$s</string>
+    <string name="log_tablero">Tauler: %1$dx%2$d</string>
+    <string name="log_minas">Mines: %1$d</string>
+    <string name="log_tiempo_restante">Temps restant: %1$d</string>
+    <string name="logMensaje">No hi ha partides desades</string>
 </resources>
