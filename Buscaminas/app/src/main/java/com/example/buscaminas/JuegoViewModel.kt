@@ -9,8 +9,17 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import com.example.buscaminas.data.data.AppDatabase
+import com.example.buscaminas.data.data.PartidaEntity
+import com.example.buscaminas.data.data.PartidaRepository
 
-class JuegoViewModel : ViewModel() {
+class JuegoViewModel(application: Application) : AndroidViewModel(application){
+
+    private val partidaDao = AppDatabase.getDatabase(application).partidaDao()
+
+    private val repository = PartidaRepository(partidaDao)
 
     var tablero by mutableStateOf<List<List<CasillaEstado>>>(emptyList())
         private set
@@ -164,6 +173,40 @@ class JuegoViewModel : ViewModel() {
         filaMina = -1
         columnaMina = -1
         detenerTiempo()
+    }
+
+    fun guardarPartida(config: CfgPartida, resultado: String) {
+
+        viewModelScope.launch {
+
+            val partida = PartidaEntity(
+
+                alias = config.alias,
+
+                fecha = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date()),
+
+                filas = config.filas,
+
+                columnas = config.columnas,
+
+                porcentajeMinas = config.porcentajeMinas,
+
+                totalMinas = totalMinas,
+
+                tiempoRestante = tiempoRestante,
+
+                casillasRestantes =
+                    tablero.flatten().count { !it.descubierta },
+
+                filaMina = filaMina,
+
+                columnaMina = columnaMina,
+
+                resultado = resultado
+            )
+
+            repository.insertarPartida(partida)
+        }
     }
 
 
