@@ -699,6 +699,11 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
                 )
             }
 
+            viewModel.guardarPartida(
+                config = config,
+                resultado = mensaje
+            )
+
             onFinPartida(logBase + "\n" + mensaje, tipo)
 
             viewModel.consumirEstadoPartida()
@@ -1189,7 +1194,7 @@ fun ConfiguracionLandscapePreview() {
 @Preview(showBackground = true)
 @Composable
 fun JuegoPreview() {
-    val fakeViewModel = JuegoViewModel()
+    val fakeViewModel = JuegoViewModel(android.app.Application())
 
     BuscaminasTheme {
         Juego(
