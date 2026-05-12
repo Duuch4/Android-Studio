@@ -1,2 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">Buscamines</string>
+    <string name="menu_principal">Menú principal</string>
+    <string name="boton_ayuda">Ajuda</string>
+    <string name="header_ayuda">Ajuda</string>
+    <string name="boton_empezar">Començar partida</string>
+    <string name="boton_salir">Sortir</string>
+    <string name="icono_header">Icona del menú principal</string>
+    <string name="on_volver">Tornar</string>
+    <string name="text_ayuda">Benvingut al joc del BUSCAMINES!</string>
+    <string name="text_ayuda1">El joc consisteix a descobrir totes les caselles de una graella que no continguin una mina. Algunes caselles tenen un número.</string>
+    <string name="text_ayuda2">Aquest número indica les mines que hi ha a les caselles del voltant. Així, si una casella té el número 3, significa que de les vuit caselles que hi ha al voltant (si no és una cantonada o vora) hi ha 3 amb mines i 5 sense.</string>
+    <string name="text_ayuda4">Si es descobreix una casella amb una mina, ES PERD la partida.</string>
+    <string name="text_ayuda5">En cas contrari, si descobreixes totes les caselles sense mina, GUANYES!!</string>
+    <string name="text_ayuda6">Pots configurar el nombre de files de la graella, el percentatge de mines i si vols establir un temps màxim per completar el joc.</string>
+    <string name="ph_buscaminas">Exemple del buscamines</string>
+    <string name="header_config">Configuració</string>
+    <string name="boton_empezar2">Començar</string>
+    <string name="label_alias">Àlies identificatiu</string>
+    <string name="graella">Mida de la graella</string>
+    <string name="control_tiempo">Control del temps</string>
+    <string name="porc_minas">% de mines</string>
+    <string name="casillas_restantes">%1$d caselles restants</string>
+    <string name="mina">💣</string>
+    <string name="mensaje_minaperdida">Has perdut! Bomba a la casella %1$d,%2$d i han quedat %3$d caselles per descobrir</string>
+    <string name="mensaje_tiempoperdida">Temps over ! Han quedat %1$d caselles per descobrir</string>
+    <string name="tiempo_restante">%1$d s</string>
+    <string name="mensaje_victoria">Has guanyat! Han quedat %1$d segons</string>
+    <string name="resultados_partida">RESULTATS PARTIDA</string>
+    <string name="dia_hora">Dia i hora</string>
+    <string name="valores_log">Valors del Log</string>
+    <string name="email_res">E-mail destinatari</string>
+    <string name="email_env">Enviar e-mail</string>
+    <string name="nueva_partida">Nova partida</string>
+    <string name="asunto_email">Log - %1$s</string>
+    <string name="log_base">Àlies: %1$s Caselles: %2$d x %3$d Mines: %4$d (%5$d%%) Caselles descobertes: %6$d Temps: %7$d</string>
+    <string name="partida_marcha">Partida en marxa</string>
+    <string name="snackbar_perdida">Has perdut, torna-ho a intentar!</string>
+    <string name="snackbar_victoria">Has guanyat, enhorabona!</string>
+    <string name="snackbar_tiempo">Temps esgotat, torna a provar!</string>
+    <string name="bandera">🚩</string>
+    <string name="header_resultados">Resultats</string>
+</resources>
