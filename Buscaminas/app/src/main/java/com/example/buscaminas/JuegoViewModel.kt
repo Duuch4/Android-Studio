@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -20,6 +19,8 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
     private val partidaDao = AppDatabase.getDatabase(application).partidaDao()
 
     private val repository = PartidaRepository(partidaDao)
+
+    private var ultimaHora = ""
 
     var historialPartidas by mutableStateOf<List<PartidaEntity>>(emptyList())
         private set
@@ -89,7 +90,11 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
             context.getString(R.string.log_alias, config.alias),
             context.getString(R.string.log_tablero, config.filas, config.columnas),
             context.getString(R.string.log_Porcentaje_minas, config.porcentajeMinas),
-            context.getString(R.string.log_minas, totalMinas)
+            context.getString(R.string.log_minas, totalMinas),
+            if (config.tiempoActivo)
+                context.getString(R.string.log_control_tiempo)
+            else
+                context.getString(R.string.log_sin_control_tiempo)
         )
 
         repeat(totalMinas) {
@@ -138,14 +143,30 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
     }
 
     fun descubrirCasilla(fila: Int, columna: Int) {
-            val context = getApplication<Application>()
+        val context = getApplication<Application>()
         val casilla = tablero[fila][columna]
-
-        logPartida = logPartida + context.getString(R.string.log_casilla_seleccionada, fila, columna)
 
         if (casilla.descubierta) return
 
+        val formatter = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault())
+
+        val horaActual = formatter.format(java.util.Date())
+
         casilla.descubierta = true
+
+        var texto = context.getString(R.string.log_casilla_seleccionada, fila, columna)
+
+        if (ultimaHora.isNotEmpty()) {
+            texto += "\n" + ultimaHora
+        }
+        texto += "\n" + horaActual
+
+        if (configActual?.tiempoActivo == true) {
+            texto += "\n" + context.getString(R.string.log_tiempo_restante, tiempoRestante)
+        }
+
+        logPartida = logPartida + texto
+        ultimaHora = horaActual
 
         if (casilla.esMina) {
             filaMina = fila

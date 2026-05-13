@@ -51,4 +51,7 @@
     <string name="logMensaje">No hi ha partides desades</string>
     <string name="log_Porcentaje_minas">Mines: %1$d</string>
     <string name="log_casilla_seleccionada">Casilla seleccionada: %1$d,%2$d</string>
+    <string name="log_casillas">Casilles: %1$d</string>
+    <string name="log_control_tiempo">Control del temps</string>
+    <string name="log_sin_control_tiempo">Sense control del temps</string>
 </resources>

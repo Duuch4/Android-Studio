@@ -51,4 +51,7 @@
     <string name="logMensaje">There are no saved games</string>
     <string name="log_Porcentaje_minas">%% Mines: %1$d</string>
     <string name="log_casilla_seleccionada">Square selected: %1$d,%2$d</string>
+    <string name="log_casillas">Squares: %1$d</string>
+    <string name="log_control_tiempo">Time control</string>
+    <string name="log_sin_control_tiempo">No time control</string>
 </resources>

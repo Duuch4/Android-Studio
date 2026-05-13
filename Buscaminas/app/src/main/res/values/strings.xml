@@ -46,9 +46,12 @@
     <string name="log_resultado">Resultado: %1$s</string>
     <string name="log_tablero">Tablero: %1$dx%2$d</string>
     <string name="log_minas">Minas: %1$d</string>
-    <string name="log_tiempo_restante">Tiempo restante: %1$d</string>
+    <string name="log_tiempo_restante">Tiempo restante: %1$d s</string>
     <string name="logMensaje">No hay partidas guardadas</string>
     <string name="log_Porcentaje_minas">Minas: %1$d</string>
     <string name="log_casilla_seleccionada">Casilla seleccionada: %1$d,%2$d</string>
+    <string name="log_casillas">Casillas: %1$d</string>
+    <string name="log_control_tiempo">Control del tiempo</string>
+    <string name="log_sin_control_tiempo">Sin control del tiempo</string>
 
 </resources>
