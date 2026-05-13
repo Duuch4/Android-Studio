@@ -49,4 +49,6 @@
     <string name="log_minas">Mines: %1$d</string>
     <string name="log_tiempo_restante">Remaining time: %1$d</string>
     <string name="logMensaje">There are no saved games</string>
+    <string name="log_Porcentaje_minas">%% Mines: %1$d</string>
+    <string name="log_casilla_seleccionada">Square selected: %1$d,%2$d</string>
 </resources>

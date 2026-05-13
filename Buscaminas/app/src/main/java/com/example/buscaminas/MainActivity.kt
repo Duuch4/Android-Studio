@@ -762,6 +762,13 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
                 }
             )
         }
+        //Test x ahora luego cambiar
+        Text(
+            text = "Test ",
+            fontWeight = FontWeight.Bold
+        )
+
+        viewModel.logPartida.forEach { text -> Text(text = text)}
     }
 }
 

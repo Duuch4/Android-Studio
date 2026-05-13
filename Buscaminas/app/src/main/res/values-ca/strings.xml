@@ -49,4 +49,6 @@
     <string name="log_minas">Mines: %1$d</string>
     <string name="log_tiempo_restante">Temps restant: %1$d</string>
     <string name="logMensaje">No hi ha partides desades</string>
+    <string name="log_Porcentaje_minas">Mines: %1$d</string>
+    <string name="log_casilla_seleccionada">Casilla seleccionada: %1$d,%2$d</string>
 </resources>

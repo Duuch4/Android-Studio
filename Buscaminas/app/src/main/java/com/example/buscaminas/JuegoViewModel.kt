@@ -32,6 +32,9 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
         }
     }
 
+    var logPartida by mutableStateOf<List<String>>(emptyList())
+        private set
+
     var tablero by mutableStateOf<List<List<CasillaEstado>>>(emptyList())
         private set
 
@@ -71,6 +74,8 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
         filaMina = -1
         columnaMina = -1
 
+        val context = getApplication<Application>()
+
         val totalCasillas = config.filas * config.columnas
         totalMinas = (totalCasillas * config.porcentajeMinas) / 100
 
@@ -79,6 +84,13 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
                 CasillaEstado()
             }
         }
+
+        logPartida = listOf(
+            context.getString(R.string.log_alias, config.alias),
+            context.getString(R.string.log_tablero, config.filas, config.columnas),
+            context.getString(R.string.log_Porcentaje_minas, config.porcentajeMinas),
+            context.getString(R.string.log_minas, totalMinas)
+        )
 
         repeat(totalMinas) {
             var fila: Int
@@ -126,7 +138,10 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
     }
 
     fun descubrirCasilla(fila: Int, columna: Int) {
+            val context = getApplication<Application>()
         val casilla = tablero[fila][columna]
+
+        logPartida = logPartida + context.getString(R.string.log_casilla_seleccionada, fila, columna)
 
         if (casilla.descubierta) return
 
