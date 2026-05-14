@@ -36,6 +36,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.AnimatedPane
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
+import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -640,6 +644,7 @@ fun colorNumero(minas: Int) = when (minas) {
     8 -> colorResource(R.color.num_8)
     else -> colorResource(R.color.num_8)
 }
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (String, TipoFin) -> Unit, viewModel: JuegoViewModel) {
     val context = LocalContext.current
@@ -654,7 +659,6 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
     LaunchedEffect(Unit) {
         if (viewModel.tablero.isEmpty()) {
             viewModel.iniciarPartida(config)
-
             if (config.tiempoActivo) {
                 viewModel.iniciarTiempo()
             }
@@ -665,7 +669,6 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
     val casillasDescubiertas = tablero.flatten().count { it.descubierta }
     val casillasRestantes = totalCasillas - casillasDescubiertas
 
-
     LaunchedEffect(estadoPartida) {
         estadoPartida?.let { tipo ->
 
@@ -675,14 +678,13 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
             val restantes = total - descubiertas
 
             if (tipo == TipoFin.MINA) {
-                val mediaPlayer = android.media.MediaPlayer.create(context,R.raw.explosion)
+                val mediaPlayer = android.media.MediaPlayer.create(context, R.raw.explosion)
                 mediaPlayer.start()
 
                 mediaPlayer.setOnCompletionListener {
                     it.release()
                 }
             }
-
 
             val logBase = context.getString(
                 R.string.log_base,
@@ -714,13 +716,8 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
                 )
             }
 
-            viewModel.guardarPartida(
-                config = config,
-                resultado = mensaje
-            )
-
+            viewModel.guardarPartida(config = config, resultado = mensaje)
             onFinPartida(logBase + "\n" + mensaje, tipo)
-
             viewModel.consumirEstadoPartida()
         }
     }
@@ -755,59 +752,54 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
 
         if (esTablet) {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(10.dp)
-            ) {
+            val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
 
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                ) {
-
-                    Tablero(
-                        tablero = tablero,
-                        onClickCasilla = { fila, columna ->
-                            viewModel.descubrirCasilla(fila, columna)
+            ListDetailPaneScaffold(
+                directive = navigator.scaffoldDirective,
+                value = navigator.scaffoldValue,
+                listPane = {
+                    AnimatedPane {
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .padding(10.dp)) {
+                            Tablero(
+                                tablero = tablero,
+                                onClickCasilla = { fila, columna ->
+                                    viewModel.descubrirCasilla(fila, columna)
+                                }
+                            )
                         }
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(10.dp))
-
-                Column(
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .fillMaxSize()
-                        .border(1.dp, colorResource(android.R.color.black))
-                        .padding(10.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-
-                    Text(
-                        text = stringResource(R.string.log),
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    viewModel.logPartida.forEach { text ->
-                        Text(text = text)
-
-                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                },
+                detailPane = {
+                    AnimatedPane {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(10.dp)
+                                .border(1.dp, colorResource(android.R.color.black))
+                                .padding(10.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            Text(
+                                text = stringResource(R.string.log),
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            viewModel.logPartida.forEach { linea ->
+                                Text(text = linea)
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
                     }
                 }
-            }
-
+            )
         } else {
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
             ) {
-
                 Tablero(
                     tablero = tablero,
                     onClickCasilla = { fila, columna ->
@@ -1105,7 +1097,8 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
                         errorEmail = false
                     },
                     isError = errorEmail,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .border(1.dp, colorResource(id = android.R.color.black))
                 )
 
