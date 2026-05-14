@@ -643,6 +643,8 @@ fun colorNumero(minas: Int) = when (minas) {
 @Composable
 fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (String, TipoFin) -> Unit, viewModel: JuegoViewModel) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val esTablet = configuration.smallestScreenWidthDp >= 600
 
     val tablero = viewModel.tablero
     val tiempoRestante = viewModel.tiempoRestante
@@ -750,25 +752,70 @@ fun Juego(modifier: Modifier = Modifier, config: CfgPartida, onFinPartida: (Stri
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-        ) {
-            Tablero(
-                tablero = tablero,
-                onClickCasilla = { fila, columna ->
-                    viewModel.descubrirCasilla(fila, columna)
-                }
-            )
-        }
-        //Test x ahora luego cambiar
-        Text(
-            text = "Test ",
-            fontWeight = FontWeight.Bold
-        )
 
-        viewModel.logPartida.forEach { text -> Text(text = text)}
+        if (esTablet) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp)
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                ) {
+
+                    Tablero(
+                        tablero = tablero,
+                        onClickCasilla = { fila, columna ->
+                            viewModel.descubrirCasilla(fila, columna)
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                Column(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .fillMaxSize()
+                        .border(1.dp, colorResource(android.R.color.black))
+                        .padding(10.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+
+                    Text(
+                        text = stringResource(R.string.log),
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    viewModel.logPartida.forEach { text ->
+                        Text(text = text)
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+            }
+
+        } else {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+
+                Tablero(
+                    tablero = tablero,
+                    onClickCasilla = { fila, columna ->
+                        viewModel.descubrirCasilla(fila, columna)
+                    }
+                )
+            }
+        }
     }
 }
 

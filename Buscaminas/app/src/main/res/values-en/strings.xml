@@ -54,4 +54,5 @@
     <string name="log_casillas">Squares: %1$d</string>
     <string name="log_control_tiempo">Time control</string>
     <string name="log_sin_control_tiempo">No time control</string>
+    <string name="log">LOG</string>
 </resources>

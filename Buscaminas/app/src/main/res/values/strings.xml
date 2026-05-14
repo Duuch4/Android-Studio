@@ -53,5 +53,5 @@
     <string name="log_casillas">Casillas: %1$d</string>
     <string name="log_control_tiempo">Control del tiempo</string>
     <string name="log_sin_control_tiempo">Sin control del tiempo</string>
-
+    <string name="log">LOG</string>
 </resources>

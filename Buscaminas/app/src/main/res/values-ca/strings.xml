@@ -54,4 +54,5 @@
     <string name="log_casillas">Casilles: %1$d</string>
     <string name="log_control_tiempo">Control del temps</string>
     <string name="log_sin_control_tiempo">Sense control del temps</string>
+    <string name="log">LOG</string>
 </resources>
