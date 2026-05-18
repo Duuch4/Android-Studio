@@ -42,6 +42,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
@@ -120,6 +121,7 @@ fun MyApp() {
                 onEmpezarpartida = { pantallaActual = "Configuracion" },
                 onSalir = {(context as? Activity)?.finish() },
                 onIrHistorial = { pantallaActual = "Historial" },
+                onAbrirPreferencias = { pantallaActual = "Preferencias" },
             )
 
             "Ayuda" -> Ayuda(
@@ -177,15 +179,16 @@ fun MyApp() {
     }
 }
 @Composable
-fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarpartida: () -> Unit,onSalir: () -> Unit,onIrHistorial: () -> Unit) {
+fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarpartida: () -> Unit,onSalir: () -> Unit,onIrHistorial: () -> Unit,onAbrirPreferencias: () -> Unit) {
 
     Column(
         modifier = modifier.fillMaxSize()
     ) {
 
-        TopBar(
-            titulo = stringResource(id = R.string.menu_principal),
-            onAbrirPreferencias = {}
+        Header(
+            titulo = stringResource(R.string.menu_principal),
+            icono = R.drawable.icono_mina,
+            onConfiguracion = onAbrirPreferencias
         )
 
         Column(
@@ -1261,70 +1264,60 @@ fun Snackbar(mensaje: String, tipoFin: TipoFin?) {
     }
 }
 
-@Composable
-fun Header(titulo: String, icono: Int,onConfiguracion: (() -> Unit)? = null) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        colorResource(id = R.color.verde_header1),
-                        colorResource(id = R.color.verde_header2),
-                        colorResource(id = R.color.verde_header3),
-                    )
-                )
-            )
-            .padding(15.dp),
-        verticalAlignment = Alignment.CenterVertically //El Texto
-    ) {
-
-        Image(
-            painter = painterResource(id = icono),
-            contentDescription = stringResource(id = R.string.icono_header),
-            modifier = Modifier.size(45.dp)
-        )
-
-        Text(
-            text = titulo,
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(start = 10.dp)
-        )
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(titulo: String, onAbrirPreferencias: () -> Unit){
+fun Header(
+    titulo: String,
+    icono: Int,
+    onConfiguracion: (() -> Unit)? = null
+) {
 
     TopAppBar(
+
         title = {
-            Text(text = titulo)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = icono),
+                    contentDescription = stringResource(R.string.icono_header),
+                    modifier = Modifier.size(45.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+
+                Text(
+                    text = titulo,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         },
 
         actions = {
-
-            IconButton(
-                onClick = onAbrirPreferencias
-            ) {
-
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = stringResource(R.string.configuracion)
-                )
+            if (onConfiguracion != null) {
+                IconButton(
+                    onClick = onConfiguracion
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = stringResource(R.string.configuracion)
+                    )
+                }
             }
-        }
+        },
+
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = colorResource(R.color.verde_header2)
+        )
     )
 }
-
 
 
 @Preview(showBackground = true)
 @Composable
 fun PrincipalPreview() {
     BuscaminasTheme {
-        Principal(onIrAyuda = {},onEmpezarpartida = {},onSalir={}, onIrHistorial = {})
+        Principal(onIrAyuda = {},onEmpezarpartida = {},onSalir={}, onIrHistorial = {},onAbrirPreferencias = {})
     }
 }
 
