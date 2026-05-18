@@ -195,19 +195,23 @@ fun MyApp() {
     }
 }
 @Composable
-fun Principal(modifier: Modifier = Modifier, onIrAyuda: () -> Unit, onEmpezarpartida: (CfgPartida) -> Unit, onSalir: () -> Unit, onIrHistorial: () -> Unit, ){
+fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarpartida: (CfgPartida) -> Unit, onSalir: () -> Unit, onIrHistorial: () -> Unit, ){
 
-    var mostrarPreferencias by rememberSaveable { mutableStateOf(false)}
+    var mostrarPreferencias by rememberSaveable { mutableStateOf(false) }
 
-    var alias by rememberSaveable { mutableStateOf("")}
-    var medida by rememberSaveable { mutableIntStateOf(7)}
-    var tiempoActivado by rememberSaveable { mutableStateOf(false)}
-    var porcentajeMinas by rememberSaveable { mutableIntStateOf(25)}
+    var alias by rememberSaveable { mutableStateOf("") }
+
+    var medida by rememberSaveable { mutableIntStateOf(7) }
+
+    var tiempoActivado by rememberSaveable { mutableStateOf(false) }
+
+    var porcentajeMinas by rememberSaveable { mutableIntStateOf(25) }
 
     val scope = rememberCoroutineScope()
 
     val context = LocalContext.current
-    val preferencesManager = remember {PreferencesManager(context)}
+
+    val preferencesManager = remember { PreferencesManager(context) }
 
     LaunchedEffect(Unit) {
 
@@ -238,7 +242,7 @@ fun Principal(modifier: Modifier = Modifier, onIrAyuda: () -> Unit, onEmpezarpar
         ) {
 
             Button(onClick = onIrAyuda) {
-                Text(text = stringResource(id = R.string.boton_ayuda))
+                Text(stringResource(R.string.boton_ayuda))
             }
 
             ElevatedButton(
@@ -253,354 +257,56 @@ fun Principal(modifier: Modifier = Modifier, onIrAyuda: () -> Unit, onEmpezarpar
                         )
                     )
                 }
-            ){
-                Text(text = stringResource(id = R.string.boton_empezar))
+            ) {
+                Text(stringResource(R.string.boton_empezar))
             }
 
-            ElevatedButton(onClick = onIrHistorial) {
-                Text(text = stringResource(id = R.string.boton_historial))
+            ElevatedButton(
+                onClick = onIrHistorial
+            ) {
+                Text(stringResource(R.string.boton_historial))
             }
 
-            Button(onClick = onSalir) {
-                Text(text = stringResource(id = R.string.boton_salir))
+            Button(
+                onClick = onSalir
+            ) {
+                Text(stringResource(R.string.boton_salir))
             }
         }
     }
 
-    if (mostrarPreferencias) {
-
-        AlertDialog(
-
-            onDismissRequest = { mostrarPreferencias = false },
-
-            confirmButton = {
-
-                Button(
-                    onClick = {
-                        scope.launch {
-
-                            preferencesManager.guardarPreferencias(
-                                alias = alias,
-                                medida = medida,
-                                porcentajeMinas = porcentajeMinas,
-                                tiempoActivo = tiempoActivado
-                            )
-                            mostrarPreferencias = false
-                        }
-                    }
-                ) {
-                    Text(stringResource(R.string.guardar))
-                }
-            },
-
-            dismissButton = {
-
-                Button(
-                    onClick = {
-                        mostrarPreferencias = false
-                    }
-                ) {
-                    Text(stringResource(R.string.cancelar))
-                }
-            },
-
-            title = { Text(stringResource(R.string.configuracion)) },
-
-            text = {
-
-                val configuration = LocalConfiguration.current
-                val esTablet =
-                    configuration.smallestScreenWidthDp >= 600
-
-                if (esTablet) {
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                    ) {
-
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Image(
-                                    painter = painterResource(R.drawable.alias),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-
-                                Spacer(modifier = Modifier.width(5.dp))
-
-                                Text(stringResource(R.string.label_alias))
-                            }
-
-                            Spacer(modifier = Modifier.height(5.dp))
-
-                            OutlinedTextField(
-                                value = alias,
-                                onValueChange = {
-                                    alias = it
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Image(
-                                    painter = painterResource(R.drawable.tiempo),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-
-                                Spacer(modifier = Modifier.width(5.dp))
-
-                                Text(stringResource(R.string.control_tiempo))
-                            }
-
-                            Spacer(modifier = Modifier.height(5.dp))
-
-                            Checkbox(
-                                checked = tiempoActivado,
-                                onCheckedChange = {
-                                    tiempoActivado = it
-                                }
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(25.dp))
-
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Image(
-                                    painter = painterResource(R.drawable.graella),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-
-                                Spacer(modifier = Modifier.width(5.dp))
-
-                                Text(stringResource(R.string.graella))
-                            }
-
-                            Spacer(modifier = Modifier.height(5.dp))
-
-                            Row {
-
-                                listOf(5, 6, 7).forEach { value ->
-
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-
-                                        RadioButton(
-                                            selected = medida == value,
-                                            onClick = {
-                                                medida = value
-                                            }
-                                        )
-
-                                        Text(value.toString())
-                                    }
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                Image(
-                                    painter = painterResource(R.drawable.icono_mina),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
-
-                                Spacer(modifier = Modifier.width(5.dp))
-
-                                Text(stringResource(R.string.porc_minas))
-                            }
-
-                            Spacer(modifier = Modifier.height(5.dp))
-
-                            Row {
-
-                                listOf(15, 25, 35).forEach { value ->
-
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-
-                                        RadioButton(
-                                            selected = porcentajeMinas == value,
-                                            onClick = {
-                                                porcentajeMinas = value
-                                            }
-                                        )
-
-                                        Text(value.toString())
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                } else {
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .verticalScroll(rememberScrollState())
-                    ) {
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            Image(
-                                painter = painterResource(R.drawable.alias),
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(5.dp))
-
-                            Text(stringResource(R.string.label_alias))
-                        }
-
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        OutlinedTextField(
-                            value = alias,
-                            onValueChange = {
-                                alias = it
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Spacer(modifier = Modifier.height(15.dp))
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            Image(
-                                painter = painterResource(R.drawable.tiempo),
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(5.dp))
-
-                            Text(stringResource(R.string.control_tiempo))
-                        }
-
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        Checkbox(
-                            checked = tiempoActivado,
-                            onCheckedChange = {
-                                tiempoActivado = it
-                            }
-                        )
-
-                        Spacer(modifier = Modifier.height(15.dp))
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            Image(
-                                painter = painterResource(R.drawable.graella),
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(5.dp))
-
-                            Text(stringResource(R.string.graella))
-                        }
-
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        Row {
-
-                            listOf(5, 6, 7).forEach { value ->
-
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-
-                                    RadioButton(
-                                        selected = medida == value,
-                                        onClick = {
-                                            medida = value
-                                        }
-                                    )
-
-                                    Text(value.toString())
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(15.dp))
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            Image(
-                                painter = painterResource(R.drawable.icono_mina),
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(5.dp))
-
-                            Text(stringResource(R.string.porc_minas))
-                        }
-
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        Row {
-
-                            listOf(15, 25, 35).forEach { value ->
-
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-
-                                    RadioButton(
-                                        selected = porcentajeMinas == value,
-                                        onClick = {
-                                            porcentajeMinas = value
-                                        }
-                                    )
-
-                                    Text(value.toString())
-                                }
-                            }
-                        }
-                    }
-                }
+    DialogPreferencias(
+
+        mostrar = mostrarPreferencias,
+
+        alias = alias,
+        onAliasChange = { alias = it },
+
+        medida = medida,
+        onMedidaChange = { medida = it },
+
+        porcentajeMinas = porcentajeMinas,
+        onPorcentajeMinasChange = { porcentajeMinas = it },
+
+        tiempoActivado = tiempoActivado,
+        onTiempoChange = { tiempoActivado = it },
+
+        onGuardar = {
+            scope.launch {
+                preferencesManager.guardarPreferencias(
+                    alias = alias,
+                    medida = medida,
+                    porcentajeMinas = porcentajeMinas,
+                    tiempoActivo = tiempoActivado
+                )
+                mostrarPreferencias = false
             }
-        )
-    }
+        },
+
+        onCerrar = {
+            mostrarPreferencias = false
+        }
+    )
 }
 
 @Composable
@@ -1688,6 +1394,159 @@ fun Header(titulo: String, icono: Int, onConfiguracion: (() -> Unit)? = null){
     )
 }
 
+@Composable
+fun DialogPreferencias(mostrar: Boolean, alias: String, onAliasChange: (String) -> Unit, medida: Int, onMedidaChange: (Int) -> Unit, porcentajeMinas: Int, onPorcentajeMinasChange: (Int) -> Unit, tiempoActivado: Boolean, onTiempoChange: (Boolean) -> Unit, onGuardar: () -> Unit, onCerrar: () -> Unit){
+
+    if (!mostrar) return
+
+    AlertDialog(
+        onDismissRequest = onCerrar,
+        confirmButton = {
+
+            Button(
+                onClick = onGuardar
+            ) {
+                Text(stringResource(R.string.guardar))
+            }
+        },
+
+        dismissButton = {
+
+            Button(
+                onClick = onCerrar
+            ) {
+                Text(stringResource(R.string.cancelar))
+            }
+        },
+
+        title = {
+            Text(stringResource(R.string.configuracion))
+        },
+
+        text = {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+            ) {
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.alias),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(stringResource(R.string.label_alias))
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                OutlinedTextField(
+                    value = alias,
+                    onValueChange = onAliasChange,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.tiempo),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(stringResource(R.string.control_tiempo))
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Checkbox(
+                    checked = tiempoActivado,
+                    onCheckedChange = onTiempoChange
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.graella),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(stringResource(R.string.graella))
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Row {
+
+                    listOf(5, 6, 7).forEach { value ->
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = medida == value,
+                                onClick = {
+                                    onMedidaChange(value)
+                                }
+                            )
+                            Text(value.toString())
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.icono_mina),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(stringResource(R.string.porc_minas))
+                }
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Row {
+
+                    listOf(15, 25, 35).forEach { value ->
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = porcentajeMinas == value,
+                                onClick = {
+                                    onPorcentajeMinasChange(value)
+                                }
+                            )
+                            Text(value.toString())
+                        }
+                    }
+                }
+            }
+        }
+    )
+}
 
 @Preview(showBackground = true)
 @Composable
