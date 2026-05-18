@@ -27,15 +27,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
@@ -177,9 +183,9 @@ fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarparti
         modifier = modifier.fillMaxSize()
     ) {
 
-        Header(
+        TopBar(
             titulo = stringResource(id = R.string.menu_principal),
-            icono = R.drawable.icono_mina
+            onAbrirPreferencias = {}
         )
 
         Column(
@@ -1256,7 +1262,7 @@ fun Snackbar(mensaje: String, tipoFin: TipoFin?) {
 }
 
 @Composable
-fun Header(titulo: String, icono: Int) {
+fun Header(titulo: String, icono: Int,onConfiguracion: (() -> Unit)? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -1286,6 +1292,30 @@ fun Header(titulo: String, icono: Int) {
             modifier = Modifier.padding(start = 10.dp)
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopBar(titulo: String, onAbrirPreferencias: () -> Unit){
+
+    TopAppBar(
+        title = {
+            Text(text = titulo)
+        },
+
+        actions = {
+
+            IconButton(
+                onClick = onAbrirPreferencias
+            ) {
+
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = stringResource(R.string.configuracion)
+                )
+            }
+        }
+    )
 }
 
 

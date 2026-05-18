@@ -54,4 +54,5 @@
     <string name="log_control_tiempo">Control del tiempo</string>
     <string name="log_sin_control_tiempo">Sin control del tiempo</string>
     <string name="log">LOG</string>
+    <string name="configuracion">Configuración</string>
 </resources>
