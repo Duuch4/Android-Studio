@@ -54,6 +54,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -73,6 +74,10 @@ import androidx.core.net.toUri
 import com.example.buscaminas.ui.theme.BuscaminasTheme
 import java.util.Locale
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.buscaminas.data.data.PreferencesManager
+import kotlinx.coroutines.launch
+
+
 enum class TipoFin {
     VICTORIA, MINA, TIEMPO
 }
@@ -192,24 +197,26 @@ fun MyApp() {
 @Composable
 fun Principal(modifier: Modifier = Modifier, onIrAyuda: () -> Unit, onEmpezarpartida: (CfgPartida) -> Unit, onSalir: () -> Unit, onIrHistorial: () -> Unit, ){
 
-    var mostrarPreferencias by rememberSaveable {
-        mutableStateOf(false)
-    }
+    var mostrarPreferencias by rememberSaveable { mutableStateOf(false)}
 
-    var alias by rememberSaveable {
-        mutableStateOf("")
-    }
+    var alias by rememberSaveable { mutableStateOf("")}
+    var medida by rememberSaveable { mutableIntStateOf(7)}
+    var tiempoActivado by rememberSaveable { mutableStateOf(false)}
+    var porcentajeMinas by rememberSaveable { mutableIntStateOf(25)}
 
-    var medida by rememberSaveable {
-        mutableIntStateOf(7)
-    }
+    val scope = rememberCoroutineScope()
 
-    var tiempoActivado by rememberSaveable {
-        mutableStateOf(false)
-    }
+    val context = LocalContext.current
+    val preferencesManager = remember {PreferencesManager(context)}
 
-    var porcentajeMinas by rememberSaveable {
-        mutableIntStateOf(25)
+    LaunchedEffect(Unit) {
+
+        preferencesManager.preferenciasFlow.collect {
+            alias = it.alias
+            medida = it.filas
+            porcentajeMinas = it.porcentajeMinas
+            tiempoActivado = it.tiempoActivo
+        }
     }
 
     Column(
@@ -270,7 +277,16 @@ fun Principal(modifier: Modifier = Modifier, onIrAyuda: () -> Unit, onEmpezarpar
 
                 Button(
                     onClick = {
-                        mostrarPreferencias = false
+                        scope.launch {
+
+                            preferencesManager.guardarPreferencias(
+                                alias = alias,
+                                medida = medida,
+                                porcentajeMinas = porcentajeMinas,
+                                tiempoActivo = tiempoActivado
+                            )
+                            mostrarPreferencias = false
+                        }
                     }
                 ) {
                     Text(stringResource(R.string.guardar))
