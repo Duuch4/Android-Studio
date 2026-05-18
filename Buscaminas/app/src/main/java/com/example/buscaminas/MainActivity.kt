@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -61,6 +62,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -118,7 +120,7 @@ fun MyApp() {
     val snackbarHostState = remember { SnackbarHostState() }
     val viewModel: JuegoViewModel = viewModel()
     val configPartida = viewModel.configPartida
-    var partidaSeleccionada by rememberSaveable { mutableStateOf<PartidaEntity?>(null) }
+    var partidaSeleccionada by remember { mutableStateOf<PartidaEntity?>(null) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -199,21 +201,23 @@ fun MyApp() {
             }
 
             "Historial Partida" -> {
-                partidaSeleccionada?.let { partida ->
+                if (partidaSeleccionada != null) {
                     HistorialPartida(
                         modifier = Modifier.padding(innerPadding),
-                        partida = partida,
+                        partida = partidaSeleccionada!!,
                         onVolver = {
                             pantallaActual = "Historial"
                         }
                     )
+                } else {
+                    pantallaActual = "Historial"
                 }
             }
         }
     }
 }
 @Composable
-fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarpartida: (CfgPartida) -> Unit, onSalir: () -> Unit, onIrHistorial: () -> Unit, ){
+fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarpartida: (CfgPartida) -> Unit, onSalir: () -> Unit, onIrHistorial: () -> Unit ){
 
     var mostrarPreferencias by rememberSaveable { mutableStateOf(false) }
 
@@ -1423,44 +1427,61 @@ fun Snackbar(mensaje: String, tipoFin: TipoFin?) {
 @Composable
 fun Header(titulo: String, icono: Int, onConfiguracion: (() -> Unit)? = null){
 
-    TopAppBar(
-
-        title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = icono),
-                    contentDescription = stringResource(R.string.icono_header),
-                    modifier = Modifier.size(35.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        colorResource(id = R.color.verde_header1),
+                        colorResource(id = R.color.verde_header2),
+                        colorResource(id = R.color.verde_header3),
+                    )
                 )
-                Spacer(modifier = Modifier.width(10.dp))
+            )
+    ) {
 
-                Text(
-                    text = titulo,
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        },
-
-        actions = {
-            if (onConfiguracion != null) {
-                IconButton(
-                    onClick = onConfiguracion
+        TopAppBar(
+            windowInsets = WindowInsets(0.dp),
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = stringResource(R.string.configuracion)
+
+                    Image(
+                        painter = painterResource(id = icono),
+                        contentDescription = stringResource(R.string.icono_header),
+                        modifier = Modifier.size(35.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Text(
+                        text = titulo,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
-            }
-        },
+            },
 
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorResource(R.color.verde_header2)
+            actions = {
+                if (onConfiguracion != null) {
+                    IconButton(
+                        onClick = onConfiguracion
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(R.string.configuracion)
+                        )
+                    }
+                }
+            },
+
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent
+            )
         )
-    )
+    }
 }
 
 @Composable
