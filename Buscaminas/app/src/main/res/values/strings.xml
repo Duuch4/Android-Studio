@@ -57,4 +57,5 @@
     <string name="configuracion">Configuración</string>
     <string name="guardar">Guardar</string>
     <string name="cancelar">Cancelar</string>
+    <string name="boton_historial2">Historial Partida</string>
 </resources>

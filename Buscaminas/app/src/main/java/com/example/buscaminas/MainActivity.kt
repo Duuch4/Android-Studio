@@ -11,6 +11,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -74,6 +75,7 @@ import androidx.core.net.toUri
 import com.example.buscaminas.ui.theme.BuscaminasTheme
 import java.util.Locale
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.buscaminas.data.data.PartidaEntity
 import com.example.buscaminas.data.data.PreferencesManager
 import kotlinx.coroutines.launch
 
@@ -116,7 +118,7 @@ fun MyApp() {
     val snackbarHostState = remember { SnackbarHostState() }
     val viewModel: JuegoViewModel = viewModel()
     val configPartida = viewModel.configPartida
-
+    var partidaSeleccionada by rememberSaveable { mutableStateOf<PartidaEntity?>(null) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -186,10 +188,26 @@ fun MyApp() {
                 Historial(
                     modifier = Modifier.padding(innerPadding),
                     viewModel = viewModel,
+                    onSeleccionarPartida = { partida ->
+                        partidaSeleccionada = partida
+                        pantallaActual = "Historial Partida"
+                    },
                     onVolver = {
                         pantallaActual = "Principal"
                     }
                 )
+            }
+
+            "Historial Partida" -> {
+                partidaSeleccionada?.let { partida ->
+                    HistorialPartida(
+                        modifier = Modifier.padding(innerPadding),
+                        partida = partida,
+                        onVolver = {
+                            pantallaActual = "Historial"
+                        }
+                    )
+                }
             }
         }
     }
@@ -1244,7 +1262,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
 }
 
 @Composable
-fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onVolver: () -> Unit) {
+fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSeleccionarPartida: (PartidaEntity) -> Unit, onVolver: () -> Unit){
 
     val partidas = viewModel.historialPartidas
 
@@ -1255,7 +1273,6 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onVolver
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(15.dp)
     ) {
 
         Header(
@@ -1286,25 +1303,77 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onVolver
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 10.dp)
-                            .border(
-                                1.dp,
-                                colorResource(android.R.color.black)
-                            )
+                            .border(1.dp, colorResource(android.R.color.black))
+                            .clickable { onSeleccionarPartida(partida) }
                             .padding(10.dp)
                     ) {
 
                         Column {
+
                             Text(stringResource(R.string.log_alias, partida.alias))
+
                             Text(stringResource(R.string.log_fecha, partida.fecha))
+
                             Text(stringResource(R.string.log_resultado, partida.resultado))
-                            Text(stringResource(R.string.log_tablero, partida.filas, partida.columnas))
-                            Text(stringResource(R.string.log_minas, partida.totalMinas))
-                            Text(stringResource(R.string.tiempo_restante, partida.tiempoRestante))
                         }
                     }
                 }
             }
         }
+
+        Button(
+            onClick = onVolver,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(id = R.string.on_volver))
+        }
+    }
+}
+
+@Composable
+fun HistorialPartida(modifier: Modifier = Modifier, partida: PartidaEntity, onVolver: () -> Unit){
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+
+        Header(
+            titulo = stringResource(id = R.string.boton_historial2),
+            icono = R.drawable.icono_mina
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .border(1.dp, colorResource(android.R.color.black))
+                .padding(10.dp)
+        ) {
+
+            Column {
+                Text(stringResource(R.string.log_alias, partida.alias))
+
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(stringResource(R.string.log_fecha, partida.fecha))
+
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(stringResource(R.string.log_resultado, partida.resultado))
+
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(stringResource(R.string.log_tablero, partida.filas, partida.columnas))
+
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(stringResource(R.string.log_minas, partida.totalMinas))
+
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(stringResource(R.string.tiempo_restante, partida.tiempoRestante))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
 
         Button(
             onClick = onVolver,
