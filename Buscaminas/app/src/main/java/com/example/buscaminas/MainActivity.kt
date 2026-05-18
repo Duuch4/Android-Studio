@@ -29,6 +29,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedButton
@@ -80,6 +81,13 @@ fun emailValido(email: String): Boolean {
     return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
 
+data class CfgPartida(
+    val alias: String,
+    val filas: Int,
+    val columnas: Int,
+    val porcentajeMinas: Int,
+    val tiempoActivo: Boolean
+)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,10 +126,13 @@ fun MyApp() {
             "Principal" -> Principal(
                 modifier = Modifier.padding(innerPadding),
                 onIrAyuda = { pantallaActual = "Ayuda" },
-                onEmpezarpartida = { pantallaActual = "Configuracion" },
+                onEmpezarpartida = { config ->
+                    viewModel.resetPartida()
+                    viewModel.configPartida = config
+                    pantallaActual = "Juego"
+                },
                 onSalir = {(context as? Activity)?.finish() },
                 onIrHistorial = { pantallaActual = "Historial" },
-                onAbrirPreferencias = { pantallaActual = "Preferencias" },
             )
 
             "Ayuda" -> Ayuda(
@@ -160,7 +171,7 @@ fun MyApp() {
                     tipoFin = tipoFin,
                     snackbarHostState = snackbarHostState,
                     onNuevaPartida = {
-                        pantallaActual = "Configuracion"
+                        pantallaActual = "Principal"
                     },
                     onSalir = {(context as? Activity)?.finish() }
                 )
@@ -179,7 +190,27 @@ fun MyApp() {
     }
 }
 @Composable
-fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarpartida: () -> Unit,onSalir: () -> Unit,onIrHistorial: () -> Unit,onAbrirPreferencias: () -> Unit) {
+fun Principal(modifier: Modifier = Modifier, onIrAyuda: () -> Unit, onEmpezarpartida: (CfgPartida) -> Unit, onSalir: () -> Unit, onIrHistorial: () -> Unit, ){
+
+    var mostrarPreferencias by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var alias by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var medida by rememberSaveable {
+        mutableIntStateOf(7)
+    }
+
+    var tiempoActivado by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var porcentajeMinas by rememberSaveable {
+        mutableIntStateOf(25)
+    }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -188,11 +219,13 @@ fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarparti
         Header(
             titulo = stringResource(R.string.menu_principal),
             icono = R.drawable.icono_mina,
-            onConfiguracion = onAbrirPreferencias
+            onConfiguracion = {
+                mostrarPreferencias = true
+            }
         )
 
         Column(
-            modifier = modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -201,7 +234,19 @@ fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarparti
                 Text(text = stringResource(id = R.string.boton_ayuda))
             }
 
-            ElevatedButton(onClick = onEmpezarpartida) {
+            ElevatedButton(
+                onClick = {
+                    onEmpezarpartida(
+                        CfgPartida(
+                            alias = alias,
+                            filas = medida,
+                            columnas = medida,
+                            porcentajeMinas = porcentajeMinas,
+                            tiempoActivo = tiempoActivado
+                        )
+                    )
+                }
+            ){
                 Text(text = stringResource(id = R.string.boton_empezar))
             }
 
@@ -213,6 +258,332 @@ fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarparti
                 Text(text = stringResource(id = R.string.boton_salir))
             }
         }
+    }
+
+    if (mostrarPreferencias) {
+
+        AlertDialog(
+
+            onDismissRequest = { mostrarPreferencias = false },
+
+            confirmButton = {
+
+                Button(
+                    onClick = {
+                        mostrarPreferencias = false
+                    }
+                ) {
+                    Text(stringResource(R.string.guardar))
+                }
+            },
+
+            dismissButton = {
+
+                Button(
+                    onClick = {
+                        mostrarPreferencias = false
+                    }
+                ) {
+                    Text(stringResource(R.string.cancelar))
+                }
+            },
+
+            title = { Text(stringResource(R.string.configuracion)) },
+
+            text = {
+
+                val configuration = LocalConfiguration.current
+                val esTablet =
+                    configuration.smallestScreenWidthDp >= 600
+
+                if (esTablet) {
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)
+                    ) {
+
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Image(
+                                    painter = painterResource(R.drawable.alias),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(5.dp))
+
+                                Text(stringResource(R.string.label_alias))
+                            }
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            OutlinedTextField(
+                                value = alias,
+                                onValueChange = {
+                                    alias = it
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Image(
+                                    painter = painterResource(R.drawable.tiempo),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(5.dp))
+
+                                Text(stringResource(R.string.control_tiempo))
+                            }
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Checkbox(
+                                checked = tiempoActivado,
+                                onCheckedChange = {
+                                    tiempoActivado = it
+                                }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(25.dp))
+
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Image(
+                                    painter = painterResource(R.drawable.graella),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(5.dp))
+
+                                Text(stringResource(R.string.graella))
+                            }
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Row {
+
+                                listOf(5, 6, 7).forEach { value ->
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+
+                                        RadioButton(
+                                            selected = medida == value,
+                                            onClick = {
+                                                medida = value
+                                            }
+                                        )
+
+                                        Text(value.toString())
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Image(
+                                    painter = painterResource(R.drawable.icono_mina),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(5.dp))
+
+                                Text(stringResource(R.string.porc_minas))
+                            }
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Row {
+
+                                listOf(15, 25, 35).forEach { value ->
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+
+                                        RadioButton(
+                                            selected = porcentajeMinas == value,
+                                            onClick = {
+                                                porcentajeMinas = value
+                                            }
+                                        )
+
+                                        Text(value.toString())
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                } else {
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            Image(
+                                painter = painterResource(R.drawable.alias),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+
+                            Spacer(modifier = Modifier.width(5.dp))
+
+                            Text(stringResource(R.string.label_alias))
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        OutlinedTextField(
+                            value = alias,
+                            onValueChange = {
+                                alias = it
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(15.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            Image(
+                                painter = painterResource(R.drawable.tiempo),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+
+                            Spacer(modifier = Modifier.width(5.dp))
+
+                            Text(stringResource(R.string.control_tiempo))
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        Checkbox(
+                            checked = tiempoActivado,
+                            onCheckedChange = {
+                                tiempoActivado = it
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(15.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            Image(
+                                painter = painterResource(R.drawable.graella),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+
+                            Spacer(modifier = Modifier.width(5.dp))
+
+                            Text(stringResource(R.string.graella))
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        Row {
+
+                            listOf(5, 6, 7).forEach { value ->
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+
+                                    RadioButton(
+                                        selected = medida == value,
+                                        onClick = {
+                                            medida = value
+                                        }
+                                    )
+
+                                    Text(value.toString())
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(15.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            Image(
+                                painter = painterResource(R.drawable.icono_mina),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+
+                            Spacer(modifier = Modifier.width(5.dp))
+
+                            Text(stringResource(R.string.porc_minas))
+                        }
+
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        Row {
+
+                            listOf(15, 25, 35).forEach { value ->
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+
+                                    RadioButton(
+                                        selected = porcentajeMinas == value,
+                                        onClick = {
+                                            porcentajeMinas = value
+                                        }
+                                    )
+
+                                    Text(value.toString())
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        )
     }
 }
 
@@ -328,13 +699,6 @@ fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
     }
 }
 
-data class CfgPartida(
-    val alias: String,
-    val filas: Int,
-    val columnas: Int,
-    val porcentajeMinas: Int,
-    val tiempoActivo: Boolean
-)
 @Composable
 fun Configuracion(modifier: Modifier = Modifier, onEmpezar: (CfgPartida) -> Unit) {
 
@@ -1266,11 +1630,7 @@ fun Snackbar(mensaje: String, tipoFin: TipoFin?) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Header(
-    titulo: String,
-    icono: Int,
-    onConfiguracion: (() -> Unit)? = null
-) {
+fun Header(titulo: String, icono: Int, onConfiguracion: (() -> Unit)? = null){
 
     TopAppBar(
 
@@ -1281,13 +1641,13 @@ fun Header(
                 Image(
                     painter = painterResource(id = icono),
                     contentDescription = stringResource(R.string.icono_header),
-                    modifier = Modifier.size(45.dp)
+                    modifier = Modifier.size(35.dp)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Text(
                     text = titulo,
-                    fontSize = 30.sp,
+                    fontSize = 25.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -1317,7 +1677,7 @@ fun Header(
 @Composable
 fun PrincipalPreview() {
     BuscaminasTheme {
-        Principal(onIrAyuda = {},onEmpezarpartida = {},onSalir={}, onIrHistorial = {},onAbrirPreferencias = {})
+        Principal(onIrAyuda = {},onEmpezarpartida = {},onSalir={}, onIrHistorial = {})
     }
 }
 
