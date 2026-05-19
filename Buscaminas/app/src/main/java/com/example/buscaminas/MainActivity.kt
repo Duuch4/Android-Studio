@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -339,6 +340,7 @@ fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
 
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    BackHandler { onVolver() }
 
     if (isLandscape) {
         Column(modifier = modifier.fillMaxSize()) {
@@ -950,7 +952,7 @@ fun Tablero(tablero: List<List<CasillaEstado>>, onClickCasilla: (Int, Int) -> Un
         val mida = minOf(
             ancho / columnas,
             alto / filas
-        )
+        )* 0.85f
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
