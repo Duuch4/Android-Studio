@@ -67,14 +67,9 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
 
     fun iniciarPartida(config: CfgPartida) {
 
-        detenerTiempo()
+        resetPartida()
 
         configActual = config
-        tiempoRestante = TIEMPO_INICIAL
-        estadoPartida = null
-        filaMina = -1
-        columnaMina = -1
-
         val context = getApplication<Application>()
 
         val totalCasillas = config.filas * config.columnas
@@ -215,10 +210,13 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
     }
 
     fun resetPartida() {
+
         tablero = emptyList()
+        logPartida = emptyList()
         estadoPartida = null
         filaMina = -1
         columnaMina = -1
+        tiempoRestante = TIEMPO_INICIAL
         detenerTiempo()
     }
 
