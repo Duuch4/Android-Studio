@@ -149,8 +149,6 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
 
         val horaActual = formatter.format(java.util.Date())
 
-        casilla.descubierta = true
-
         var texto = context.getString(R.string.log_casilla_seleccionada, fila, columna)
 
         if (ultimaHora.isNotEmpty()) {
@@ -166,15 +164,51 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
         ultimaHora = horaActual
 
         if (casilla.esMina) {
+
+            casilla.descubierta = true
             filaMina = fila
             columnaMina = columna
-
             detenerTiempo()
             estadoPartida = TipoFin.MINA
+
             return
         }
 
+        if (casilla.minasAlrededor == 0) {
+            descubrirCasillasVacias(fila, columna)
+        } else {
+            casilla.descubierta = true
+        }
+
         comprobarVictoria()
+    }
+
+    private fun descubrirCasillasVacias(fila: Int, columna: Int) {
+
+        if (fila !in tablero.indices ||
+            columna !in tablero[0].indices
+        ) return
+
+        val casilla = tablero[fila][columna]
+
+        if (casilla.descubierta || casilla.tieneBandera) return
+
+        casilla.descubierta = true
+
+        if (casilla.minasAlrededor > 0) return
+
+        for (f in -1..1) {
+            for (c in -1..1) {
+
+                if (f != 0 || c != 0) {
+
+                    descubrirCasillasVacias(
+                        fila + f,
+                        columna + c
+                    )
+                }
+            }
+        }
     }
     private fun comprobarVictoria() {
         val casillasSinMinas = tablero.flatten().count { !it.esMina }
