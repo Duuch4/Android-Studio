@@ -1282,9 +1282,7 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
     val configuration = LocalConfiguration.current
     val esTablet = configuration.smallestScreenWidthDp >= 600
 
-    var partidaSeleccionada by remember {
-        mutableStateOf<PartidaEntity?>(null)
-    }
+    val partidaSeleccionada = viewModel.partidaSeleccionada
 
     LaunchedEffect(Unit) {
         viewModel.cargarPartidas()
@@ -1328,7 +1326,7 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
                                         .padding(bottom = 10.dp)
                                         .border(1.dp,colorResource(android.R.color.black))
                                         .clickable {
-                                            partidaSeleccionada = partida
+                                            viewModel.partidaSeleccionada = partida
                                             scope.launch {
                                                 navigator.navigateTo(
                                                     ListDetailPaneScaffoldRole.Detail

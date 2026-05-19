@@ -25,6 +25,8 @@ class JuegoViewModel(application: Application) : AndroidViewModel(application){
     var historialPartidas by mutableStateOf<List<PartidaEntity>>(emptyList())
         private set
 
+    var partidaSeleccionada by mutableStateOf<PartidaEntity?>(null)
+
     fun cargarPartidas() {
 
         viewModelScope.launch {
