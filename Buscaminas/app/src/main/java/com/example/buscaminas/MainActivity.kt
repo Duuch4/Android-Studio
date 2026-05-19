@@ -351,13 +351,13 @@ fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(20.dp)
+                    .padding(horizontal = 15.dp, vertical = 5.dp)
             ) {
 
                 Column(
                     modifier = Modifier
-                        .weight(1.5f)
-                        .padding(end = 20.dp),
+                        .weight(1.8f)
+                        .padding(end = 10.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
 
@@ -378,7 +378,7 @@ fun Ayuda(modifier: Modifier = Modifier, onVolver: () -> Unit) {
 
                 Column(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(0.8f)
                         .fillMaxHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
