@@ -1132,6 +1132,9 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
 
                     Button(
                         onClick = {
+                            if (!emailValido(email)) {
+                                errorEmail = true
+                            } else {
                             val intent = Intent(Intent.ACTION_SENDTO).apply {
                                 data = "mailto:".toUri()
                                 putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
@@ -1142,7 +1145,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
                                 putExtra(Intent.EXTRA_TEXT, resultado)
                             }
                             context.startActivity(intent)
-                        },
+                        }},
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(stringResource(id = R.string.email_env))
@@ -1351,11 +1354,9 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
 
                     AnimatedPane {
 
-                        val actualPartida = partidaSeleccionada
+                        LaunchedEffect(partidaSeleccionada) {
 
-                        LaunchedEffect(actualPartida) {
-
-                            if (actualPartida == null &&
+                            if (partidaSeleccionada == null &&
                                 navigator.canNavigateBack()
                             ) {
 
@@ -1365,7 +1366,7 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
                             }
                         }
 
-                        if (actualPartida != null) {
+                        if (partidaSeleccionada != null) {
 
                             Column(
                                 modifier = Modifier
@@ -1382,12 +1383,12 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
 
                                 Spacer(modifier = Modifier.height(10.dp))
 
-                                Text(stringResource(R.string.log_alias,actualPartida.alias))
-                                Text(stringResource(R.string.log_fecha,actualPartida.fecha))
-                                Text(stringResource(R.string.log_resultado,actualPartida.resultado))
-                                Text(stringResource(R.string.log_tablero,actualPartida.filas,actualPartida.columnas))
-                                Text(stringResource(R.string.log_minas,actualPartida.totalMinas))
-                                Text(stringResource(R.string.tiempo_restante,actualPartida.tiempoRestante))
+                                Text(stringResource(R.string.log_alias,partidaSeleccionada.alias))
+                                Text(stringResource(R.string.log_fecha,partidaSeleccionada.fecha))
+                                Text(stringResource(R.string.log_resultado,partidaSeleccionada.resultado))
+                                Text(stringResource(R.string.log_tablero,partidaSeleccionada.filas,partidaSeleccionada.columnas))
+                                Text(stringResource(R.string.log_minas,partidaSeleccionada.totalMinas))
+                                Text(stringResource(R.string.tiempo_restante,partidaSeleccionada.tiempoRestante))
                             }
 
                         } else {
