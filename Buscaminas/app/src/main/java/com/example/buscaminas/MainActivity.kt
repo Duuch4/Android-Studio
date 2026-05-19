@@ -1265,10 +1265,18 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
     }
 }
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSeleccionarPartida: (PartidaEntity) -> Unit, onVolver: () -> Unit){
 
     val partidas = viewModel.historialPartidas
+
+    val configuration = LocalConfiguration.current
+    val esTablet = configuration.smallestScreenWidthDp >= 300
+
+    var partidaSeleccionada by remember {
+        mutableStateOf<PartidaEntity?>(null)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.cargarPartidas()
@@ -1286,50 +1294,143 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-        ) {
+        if (esTablet) {
 
-            if (partidas.isEmpty()) {
+            val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
 
-                Text(
-                    text = stringResource(R.string.logMensaje),
-                    modifier = Modifier.padding(10.dp)
-                )
+            ListDetailPaneScaffold(
+                modifier = Modifier.weight(1f),
+                directive = navigator.scaffoldDirective,
+                value = navigator.scaffoldValue,
 
-            } else {
+                listPane = {
 
-                partidas.forEach { partida ->
+                    AnimatedPane {
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 10.dp)
-                            .border(1.dp, colorResource(android.R.color.black))
-                            .clickable { onSeleccionarPartida(partida) }
-                            .padding(10.dp)
-                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(10.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
 
-                        Column {
+                            partidas.forEach { partida ->
 
-                            Text(stringResource(R.string.log_alias, partida.alias))
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 10.dp)
+                                        .border(1.dp, colorResource(android.R.color.black))
+                                        .clickable {
+                                            partidaSeleccionada = partida
+                                        }
+                                        .padding(10.dp)
+                                ) {
 
-                            Text(stringResource(R.string.log_fecha, partida.fecha))
+                                    Column {
+                                        Text(stringResource(R.string.log_alias,partida.alias))
+                                        Text(stringResource(R.string.log_fecha,partida.fecha))
+                                        Text(stringResource(R.string.log_resultado,partida.resultado))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
 
-                            Text(stringResource(R.string.log_resultado, partida.resultado))
+                detailPane = {
+
+                    AnimatedPane {
+
+                        if (partidaSeleccionada != null) {
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(10.dp)
+                                    .border(1.dp, colorResource(android.R.color.black))
+                                    .padding(10.dp)
+                            ) {
+
+                                Text(
+                                    text = stringResource(R.string.detalle_partida),
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                Text(stringResource(R.string.log_alias,partidaSeleccionada!!.alias))
+                                Text(stringResource(R.string.log_fecha,partidaSeleccionada!!.fecha))
+                                Text(stringResource(R.string.log_resultado,partidaSeleccionada!!.resultado))
+                                Text(stringResource(R.string.log_tablero,partidaSeleccionada!!.filas,partidaSeleccionada!!.columnas))
+                                Text(stringResource(R.string.log_minas,partidaSeleccionada!!.totalMinas))
+                                Text(stringResource(R.string.tiempo_restante,partidaSeleccionada!!.tiempoRestante))
+                            }
+
+                        } else {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(stringResource(R.string.selecciona_partida))
+                            }
+                        }
+                    }
+                }
+            )
+
+            Button(
+                onClick = onVolver,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+            ) {
+                Text(stringResource(id = R.string.on_volver))
+            }
+
+        } else {
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+
+                if (partidas.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.logMensaje),
+                        modifier = Modifier.padding(10.dp)
+                    )
+                } else {
+
+                    partidas.forEach { partida ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 10.dp)
+                                .border(1.dp, colorResource(android.R.color.black))
+                                .clickable {
+                                    onSeleccionarPartida(partida)
+                                }
+                                .padding(10.dp)
+                        ) {
+
+                            Column {
+                                Text(stringResource(R.string.log_alias, partida.alias))
+                                Text(stringResource(R.string.log_fecha, partida.fecha))
+                                Text(stringResource(R.string.log_resultado, partida.resultado))
+                            }
                         }
                     }
                 }
             }
-        }
 
-        Button(
-            onClick = onVolver,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(id = R.string.on_volver))
+            Button(
+                onClick = onVolver,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(id = R.string.on_volver))
+            }
         }
     }
 }

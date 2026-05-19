@@ -58,4 +58,6 @@
     <string name="guardar">Guardar</string>
     <string name="cancelar">Cancelar</string>
     <string name="boton_historial2">Historial Partida</string>
+    <string name="detalle_partida">Detalle partida</string>
+    <string name="selecciona_partida">Selecciona una partida</string>
 </resources>
