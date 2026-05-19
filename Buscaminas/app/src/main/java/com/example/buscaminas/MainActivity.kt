@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -1266,12 +1268,10 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
     }
 }
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
-@Composable
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)@Composable
 fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSeleccionarPartida: (PartidaEntity) -> Unit, onVolver: () -> Unit){
 
     val partidas = viewModel.historialPartidas
-
     val configuration = LocalConfiguration.current
     val esTablet = configuration.smallestScreenWidthDp >= 600
 
@@ -1284,8 +1284,7 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
 
         Header(
@@ -1293,12 +1292,12 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
             icono = R.drawable.icono_mina
         )
 
-
         Spacer(modifier = Modifier.height(10.dp))
 
         if (esTablet) {
 
-            val navigator = rememberListDetailPaneScaffoldNavigator<PartidaEntity>()
+            val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
+            val scope = rememberCoroutineScope()
 
             ListDetailPaneScaffold(
                 modifier = Modifier.weight(1f),
@@ -1309,23 +1308,25 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
 
                     AnimatedPane {
 
-                        Column(
+                        LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(10.dp)
-                                .verticalScroll(rememberScrollState())
                         ) {
 
-                            partidas.forEach { partida ->
-
+                            items(partidas) { partida ->
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(bottom = 10.dp)
-                                        .border(1.dp, colorResource(android.R.color.black))
+                                        .border(1.dp,colorResource(android.R.color.black))
                                         .clickable {
                                             partidaSeleccionada = partida
-                                            navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, partida)
+                                            scope.launch {
+                                                navigator.navigateTo(
+                                                    ListDetailPaneScaffoldRole.Detail
+                                                )
+                                            }
                                         }
                                         .padding(10.dp)
                                 ) {
@@ -1345,15 +1346,27 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
 
                     AnimatedPane {
 
-                        val partidaSeleccionada = navigator.currentDestination?.content
+                        val actualPartida = partidaSeleccionada
 
-                        if (partidaSeleccionada != null) {
+                        LaunchedEffect(actualPartida) {
+
+                            if (actualPartida == null &&
+                                navigator.canNavigateBack()
+                            ) {
+
+                                scope.launch {
+                                    navigator.navigateBack()
+                                }
+                            }
+                        }
+
+                        if (actualPartida != null) {
 
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(10.dp)
-                                    .border(1.dp, colorResource(android.R.color.black))
+                                    .border(1.dp,colorResource(android.R.color.black))
                                     .padding(10.dp)
                             ) {
 
@@ -1364,12 +1377,12 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
 
                                 Spacer(modifier = Modifier.height(10.dp))
 
-                                Text(stringResource(R.string.log_alias,partidaSeleccionada.alias))
-                                Text(stringResource(R.string.log_fecha,partidaSeleccionada.fecha))
-                                Text(stringResource(R.string.log_resultado,partidaSeleccionada.resultado))
-                                Text(stringResource(R.string.log_tablero,partidaSeleccionada.filas,partidaSeleccionada.columnas))
-                                Text(stringResource(R.string.log_minas,partidaSeleccionada.totalMinas))
-                                Text(stringResource(R.string.tiempo_restante,partidaSeleccionada.tiempoRestante))
+                                Text(stringResource(R.string.log_alias,actualPartida.alias))
+                                Text(stringResource(R.string.log_fecha,actualPartida.fecha))
+                                Text(stringResource(R.string.log_resultado,actualPartida.resultado))
+                                Text(stringResource(R.string.log_tablero,actualPartida.filas,actualPartida.columnas))
+                                Text(stringResource(R.string.log_minas,actualPartida.totalMinas))
+                                Text(stringResource(R.string.tiempo_restante,actualPartida.tiempoRestante))
                             }
 
                         } else {
@@ -1387,7 +1400,7 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
             Button(
                 onClick = {
                     if (navigator.canNavigateBack()) {
-                        navigator.navigateBack()
+                        scope.launch { navigator.navigateBack() }
                     } else {
                         onVolver()
                     }
@@ -1427,9 +1440,9 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
                         ) {
 
                             Column {
-                                Text(stringResource(R.string.log_alias, partida.alias))
-                                Text(stringResource(R.string.log_fecha, partida.fecha))
-                                Text(stringResource(R.string.log_resultado, partida.resultado))
+                                Text(stringResource(R.string.log_alias,partida.alias))
+                                Text(stringResource(R.string.log_fecha,partida.fecha))
+                                Text(stringResource(R.string.log_resultado,partida.resultado))
                             }
                         }
                     }
