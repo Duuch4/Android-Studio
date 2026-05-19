@@ -1203,7 +1203,12 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
                         .border(1.dp, colorResource(id = android.R.color.black))
                         .padding(10.dp)
                 ) {
-                    Text(resultado)
+                    Text(
+                        text = resultado,
+                        modifier = Modifier.verticalScroll(
+                            rememberScrollState()
+                        )
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
