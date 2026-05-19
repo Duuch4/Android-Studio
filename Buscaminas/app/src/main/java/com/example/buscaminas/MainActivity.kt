@@ -49,6 +49,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -1272,7 +1273,7 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
     val partidas = viewModel.historialPartidas
 
     val configuration = LocalConfiguration.current
-    val esTablet = configuration.smallestScreenWidthDp >= 300
+    val esTablet = configuration.smallestScreenWidthDp >= 600
 
     var partidaSeleccionada by remember {
         mutableStateOf<PartidaEntity?>(null)
@@ -1292,11 +1293,12 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
             icono = R.drawable.icono_mina
         )
 
+
         Spacer(modifier = Modifier.height(10.dp))
 
         if (esTablet) {
 
-            val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
+            val navigator = rememberListDetailPaneScaffoldNavigator<PartidaEntity>()
 
             ListDetailPaneScaffold(
                 modifier = Modifier.weight(1f),
@@ -1323,6 +1325,7 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
                                         .border(1.dp, colorResource(android.R.color.black))
                                         .clickable {
                                             partidaSeleccionada = partida
+                                            navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, partida)
                                         }
                                         .padding(10.dp)
                                 ) {
@@ -1342,6 +1345,8 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
 
                     AnimatedPane {
 
+                        val partidaSeleccionada = navigator.currentDestination?.content
+
                         if (partidaSeleccionada != null) {
 
                             Column(
@@ -1359,12 +1364,12 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
 
                                 Spacer(modifier = Modifier.height(10.dp))
 
-                                Text(stringResource(R.string.log_alias,partidaSeleccionada!!.alias))
-                                Text(stringResource(R.string.log_fecha,partidaSeleccionada!!.fecha))
-                                Text(stringResource(R.string.log_resultado,partidaSeleccionada!!.resultado))
-                                Text(stringResource(R.string.log_tablero,partidaSeleccionada!!.filas,partidaSeleccionada!!.columnas))
-                                Text(stringResource(R.string.log_minas,partidaSeleccionada!!.totalMinas))
-                                Text(stringResource(R.string.tiempo_restante,partidaSeleccionada!!.tiempoRestante))
+                                Text(stringResource(R.string.log_alias,partidaSeleccionada.alias))
+                                Text(stringResource(R.string.log_fecha,partidaSeleccionada.fecha))
+                                Text(stringResource(R.string.log_resultado,partidaSeleccionada.resultado))
+                                Text(stringResource(R.string.log_tablero,partidaSeleccionada.filas,partidaSeleccionada.columnas))
+                                Text(stringResource(R.string.log_minas,partidaSeleccionada.totalMinas))
+                                Text(stringResource(R.string.tiempo_restante,partidaSeleccionada.tiempoRestante))
                             }
 
                         } else {
@@ -1380,7 +1385,13 @@ fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSelecc
             )
 
             Button(
-                onClick = onVolver,
+                onClick = {
+                    if (navigator.canNavigateBack()) {
+                        navigator.navigateBack()
+                    } else {
+                        onVolver()
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp)
