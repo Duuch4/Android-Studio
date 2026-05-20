@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -41,11 +42,13 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -77,6 +80,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import com.example.buscaminas.ui.theme.BuscaminasTheme
 import java.util.Locale
@@ -1571,156 +1576,305 @@ fun Header(titulo: String, icono: Int, onConfiguracion: (() -> Unit)? = null){
 
 @Composable
 fun DialogPreferencias(mostrar: Boolean, alias: String, onAliasChange: (String) -> Unit, medida: Int, onMedidaChange: (Int) -> Unit, porcentajeMinas: Int, onPorcentajeMinasChange: (Int) -> Unit, tiempoActivado: Boolean, onTiempoChange: (Boolean) -> Unit, onGuardar: () -> Unit, onCerrar: () -> Unit){
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     if (!mostrar) return
 
-    AlertDialog(
+    Dialog(
         onDismissRequest = onCerrar,
-        confirmButton = {
-
-            Button(
-                onClick = onGuardar
-            ) {
-                Text(stringResource(R.string.guardar))
-            }
-        },
-
-        dismissButton = {
-
-            Button(
-                onClick = onCerrar
-            ) {
-                Text(stringResource(R.string.cancelar))
-            }
-        },
-
-        title = {
-            Text(stringResource(R.string.configuracion))
-        },
-
-        text = {
-
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Surface(
+            shape = RoundedCornerShape(20.dp),
+            color = MaterialTheme.colorScheme.surface,
+            modifier = Modifier.fillMaxWidth(if (isLandscape) 0.95f else 0.92f)
+        ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
             ) {
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.alias),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(stringResource(R.string.label_alias))
-                }
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                OutlinedTextField(
-                    value = alias,
-                    onValueChange = onAliasChange,
-                    modifier = Modifier.fillMaxWidth()
+                Text(
+                    text = stringResource(R.string.configuracion),
+                    style = MaterialTheme.typography.headlineSmall
                 )
 
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.tiempo),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
+                if (isLandscape) {
 
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(stringResource(R.string.control_tiempo))
-                }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
 
-                Spacer(modifier = Modifier.height(5.dp))
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
 
-                Checkbox(
-                    checked = tiempoActivado,
-                    onCheckedChange = onTiempoChange
-                )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image(
+                                    painter = painterResource(R.drawable.alias),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
 
-                Spacer(modifier = Modifier.height(15.dp))
+                                Spacer(modifier = Modifier.width(5.dp))
+                                Text(stringResource(R.string.label_alias))
+                            }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.graella),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
+                            Spacer(modifier = Modifier.height(5.dp))
 
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(stringResource(R.string.graella))
-                }
+                            OutlinedTextField(
+                                value = alias,
+                                onValueChange = onAliasChange,
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
 
-                Spacer(modifier = Modifier.height(5.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
 
-                Row {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image(
+                                    painter = painterResource(R.drawable.tiempo),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
 
-                    listOf(5, 6, 7).forEach { value ->
+                                Spacer(modifier = Modifier.width(5.dp))
+                                Text(stringResource(R.string.control_tiempo))
+                            }
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Checkbox(
+                                checked = tiempoActivado,
+                                onCheckedChange = onTiempoChange
+                            )
+                        }
+
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image(
+                                    painter = painterResource(R.drawable.graella),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(5.dp))
+                                Text(stringResource(R.string.graella))
+                            }
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+
+                                listOf(5, 6, 7).forEach { value ->
+
+                                    Row(
+                                        modifier = Modifier.weight(1f),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RadioButton(
+                                            selected = medida == value,
+                                            onClick = {
+                                                onMedidaChange(value)
+                                            }
+                                        )
+                                        Text(value.toString())
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image(
+                                    painter = painterResource(R.drawable.icono_mina),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(5.dp))
+                                Text(stringResource(R.string.porc_minas))
+                            }
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+
+                                listOf(15, 25, 35).forEach { value ->
+
+                                    Row(
+                                        modifier = Modifier.weight(1f),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RadioButton(
+                                            selected = porcentajeMinas == value,
+                                            onClick = {
+                                                onPorcentajeMinasChange(value)
+                                            }
+                                        )
+                                        Text(value.toString())
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                } else {
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            RadioButton(
-                                selected = medida == value,
-                                onClick = {
-                                    onMedidaChange(value)
-                                }
+                            Image(
+                                painter = painterResource(R.drawable.alias),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
                             )
-                            Text(value.toString())
+
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(stringResource(R.string.label_alias))
                         }
-                    }
-                }
 
-                Spacer(modifier = Modifier.height(15.dp))
+                        Spacer(modifier = Modifier.height(5.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.icono_mina),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
+                        OutlinedTextField(
+                            value = alias,
+                            onValueChange = onAliasChange,
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true
+                        )
 
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(stringResource(R.string.porc_minas))
-                }
-
-                Spacer(modifier = Modifier.height(5.dp))
-
-                Row {
-
-                    listOf(15, 25, 35).forEach { value ->
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            RadioButton(
-                                selected = porcentajeMinas == value,
-                                onClick = {
-                                    onPorcentajeMinasChange(value)
-                                }
+                            Image(
+                                painter = painterResource(R.drawable.tiempo),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
                             )
-                            Text(value.toString())
+
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(stringResource(R.string.control_tiempo))
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Checkbox(
+                            checked = tiempoActivado,
+                            onCheckedChange = onTiempoChange
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.graella),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(stringResource(R.string.graella))
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Row {
+
+                            listOf(5, 6, 7).forEach { value ->
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+
+                                    RadioButton(
+                                        selected = medida == value,
+                                        onClick = {
+                                            onMedidaChange(value)
+                                        }
+                                    )
+
+                                    Text(value.toString())
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.icono_mina),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(stringResource(R.string.porc_minas))
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Row {
+
+                            listOf(15, 25, 35).forEach { value ->
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+
+                                    RadioButton(
+                                        selected = porcentajeMinas == value,
+                                        onClick = {
+                                            onPorcentajeMinasChange(value)
+                                        }
+                                    )
+
+                                    Text(value.toString())
+                                }
+                            }
                         }
                     }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(onClick = onCerrar) { Text(stringResource(R.string.cancelar)) }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Button(onClick = onGuardar) { Text(stringResource(R.string.guardar)) }
                 }
             }
         }
-    )
+    }
 }
 
 @Composable
