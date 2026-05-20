@@ -224,30 +224,16 @@ fun MyApp() {
 fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarpartida: (CfgPartida) -> Unit, onSalir: () -> Unit, onIrHistorial: () -> Unit ){
 
     var mostrarPreferencias by rememberSaveable { mutableStateOf(false) }
-
-    var alias by rememberSaveable { mutableStateOf("") }
-
-    var medida by rememberSaveable { mutableIntStateOf(7) }
-
-    var tiempoActivado by rememberSaveable { mutableStateOf(false) }
-
-    var porcentajeMinas by rememberSaveable { mutableIntStateOf(25) }
-
-    val scope = rememberCoroutineScope()
-
+    var configActual by remember { mutableStateOf<CfgPartida?>(null) }
     val context = LocalContext.current
 
     val preferencesManager = remember { PreferencesManager(context) }
-
     LaunchedEffect(Unit) {
-
         preferencesManager.preferenciasFlow.collect {
-            alias = it.alias
-            medida = it.filas
-            porcentajeMinas = it.porcentajeMinas
-            tiempoActivado = it.tiempoActivo
+            configActual = it
         }
     }
+
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -273,15 +259,9 @@ fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarparti
 
             ElevatedButton(
                 onClick = {
-                    onEmpezarpartida(
-                        CfgPartida(
-                            alias = alias,
-                            filas = medida,
-                            columnas = medida,
-                            porcentajeMinas = porcentajeMinas,
-                            tiempoActivo = tiempoActivado
-                        )
-                    )
+                    configActual?.let {
+                        onEmpezarpartida(it)
+                    }
                 }
             ) {
                 Text(stringResource(R.string.boton_empezar))
@@ -301,34 +281,8 @@ fun Principal(modifier: Modifier = Modifier,onIrAyuda: () -> Unit,onEmpezarparti
         }
     }
 
-    DialogPreferencias(
-
+    PreferenciasUsuario(
         mostrar = mostrarPreferencias,
-
-        alias = alias,
-        onAliasChange = { alias = it },
-
-        medida = medida,
-        onMedidaChange = { medida = it },
-
-        porcentajeMinas = porcentajeMinas,
-        onPorcentajeMinasChange = { porcentajeMinas = it },
-
-        tiempoActivado = tiempoActivado,
-        onTiempoChange = { tiempoActivado = it },
-
-        onGuardar = {
-            scope.launch {
-                preferencesManager.guardarPreferencias(
-                    alias = alias,
-                    medida = medida,
-                    porcentajeMinas = porcentajeMinas,
-                    tiempoActivo = tiempoActivado
-                )
-                mostrarPreferencias = false
-            }
-        },
-
         onCerrar = {
             mostrarPreferencias = false
         }
@@ -1766,6 +1720,81 @@ fun DialogPreferencias(mostrar: Boolean, alias: String, onAliasChange: (String) 
                 }
             }
         }
+    )
+}
+
+@Composable
+fun PreferenciasUsuario(mostrar: Boolean, onCerrar: () -> Unit){
+
+    if (!mostrar) return
+
+    var alias by rememberSaveable { mutableStateOf("") }
+
+    var medida by rememberSaveable {
+        mutableIntStateOf(7)
+    }
+
+    var tiempoActivado by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var porcentajeMinas by rememberSaveable {
+        mutableIntStateOf(25)
+    }
+
+    val context = LocalContext.current
+
+    val scope = rememberCoroutineScope()
+
+    val preferencesManager = remember {
+        PreferencesManager(context)
+    }
+
+    LaunchedEffect(Unit) {
+        preferencesManager.preferenciasFlow.collect {
+            alias = it.alias
+            medida = it.filas
+            porcentajeMinas = it.porcentajeMinas
+            tiempoActivado = it.tiempoActivo
+        }
+    }
+
+    DialogPreferencias(
+
+        mostrar = mostrar,
+
+        alias = alias,
+        onAliasChange = {
+            alias = it
+        },
+
+        medida = medida,
+        onMedidaChange = {
+            medida = it
+        },
+
+        porcentajeMinas = porcentajeMinas,
+        onPorcentajeMinasChange = {
+            porcentajeMinas = it
+        },
+
+        tiempoActivado = tiempoActivado,
+        onTiempoChange = {
+            tiempoActivado = it
+        },
+
+        onGuardar = {
+            scope.launch {
+                preferencesManager.guardarPreferencias(
+                    alias = alias,
+                    medida = medida,
+                    porcentajeMinas = porcentajeMinas,
+                    tiempoActivo = tiempoActivado
+                )
+                onCerrar()
+            }
+        },
+        onCerrar = onCerrar
     )
 }
 
