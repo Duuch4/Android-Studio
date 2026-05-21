@@ -1575,7 +1575,7 @@ fun Header(titulo: String, icono: Int, onConfiguracion: (() -> Unit)? = null){
 }
 
 @Composable
-fun DialogPreferencias(mostrar: Boolean, alias: String, onAliasChange: (String) -> Unit, medida: Int, onMedidaChange: (Int) -> Unit, porcentajeMinas: Int, onPorcentajeMinasChange: (Int) -> Unit, tiempoActivado: Boolean, onTiempoChange: (Boolean) -> Unit, onGuardar: () -> Unit, onCerrar: () -> Unit){
+fun DialogPreferencias(mostrar: Boolean, alias: String, onAliasChange: (String) -> Unit, medida: Int, onMedidaChange: (Int) -> Unit, porcentajeMinas: Int, onPorcentajeMinasChange: (Int) -> Unit, tiempoActivado: Boolean, onTiempoChange: (Boolean) -> Unit, onGuardar: () -> Unit, onCerrar: () -> Unit,aliasError: Boolean,){
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -1630,7 +1630,8 @@ fun DialogPreferencias(mostrar: Boolean, alias: String, onAliasChange: (String) 
                                 value = alias,
                                 onValueChange = onAliasChange,
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
+                                singleLine = true,
+                                isError = aliasError,
                             )
 
                             Spacer(modifier = Modifier.height(10.dp))
@@ -1761,7 +1762,8 @@ fun DialogPreferencias(mostrar: Boolean, alias: String, onAliasChange: (String) 
                             value = alias,
                             onValueChange = onAliasChange,
                             modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
+                            singleLine = true,
+                            isError = aliasError,
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -1868,7 +1870,7 @@ fun DialogPreferencias(mostrar: Boolean, alias: String, onAliasChange: (String) 
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Button(onClick = onCerrar) { Text(stringResource(R.string.cancelar)) }
+                    Button(enabled = alias.trim().isNotEmpty(),onClick = onCerrar) { Text(stringResource(R.string.cancelar)) }
                     Spacer(modifier = Modifier.width(10.dp))
                     Button(onClick = onGuardar) { Text(stringResource(R.string.guardar)) }
                 }
@@ -1904,6 +1906,10 @@ fun PreferenciasUsuario(mostrar: Boolean, onCerrar: () -> Unit){
         PreferencesManager(context)
     }
 
+    var aliasError by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(Unit) {
         preferencesManager.preferenciasFlow.collect {
             alias = it.alias
@@ -1920,7 +1926,9 @@ fun PreferenciasUsuario(mostrar: Boolean, onCerrar: () -> Unit){
         alias = alias,
         onAliasChange = {
             alias = it
+            aliasError = it.trim().isEmpty()
         },
+        aliasError = aliasError,
 
         medida = medida,
         onMedidaChange = {
@@ -1938,6 +1946,10 @@ fun PreferenciasUsuario(mostrar: Boolean, onCerrar: () -> Unit){
         },
 
         onGuardar = {
+            if (alias.trim().isEmpty()) {
+                aliasError = true
+                return@DialogPreferencias
+            }
             scope.launch {
                 preferencesManager.guardarPreferencias(
                     alias = alias,
