@@ -990,6 +990,7 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     var errorEmail by remember { mutableStateOf(false) }
+    var mostrarPreferencias by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(tipoFin) {
         val mensaje = when (tipoFin) {
@@ -1008,7 +1009,10 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
 
         Header(
             titulo = stringResource(id = R.string.header_resultados),
-            icono = R.drawable.icono_mina
+            icono = R.drawable.icono_mina,
+            onConfiguracion = {
+                mostrarPreferencias = true
+            }
         )
 
         if (isLandscape) {
@@ -1234,6 +1238,12 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
                 }
             }
         }
+        PreferenciasUsuario(
+            mostrar = mostrarPreferencias,
+            onCerrar = {
+                mostrarPreferencias = false
+            }
+        )
     }
 }
 
