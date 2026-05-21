@@ -35,7 +35,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedButton
@@ -83,12 +82,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
-import com.example.buscaminas.ui.theme.BuscaminasTheme
-import java.util.Locale
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.buscaminas.data.data.PartidaEntity
 import com.example.buscaminas.data.data.PreferencesManager
+import com.example.buscaminas.ui.theme.BuscaminasTheme
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 
 enum class TipoFin {
