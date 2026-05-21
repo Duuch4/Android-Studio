@@ -210,10 +210,11 @@ fun MyApp() {
             }
 
             "Historial Partida" -> {
-                if (partidaSeleccionada != null) {
+                val partidaActual = partidaSeleccionada
+                if (partidaActual != null) {
                     HistorialPartida(
                         modifier = Modifier.padding(innerPadding),
-                        partida = partidaSeleccionada!!,
+                        partida = partidaActual,
                         onVolver = {
                             pantallaActual = "Historial"
                         }
@@ -1247,7 +1248,8 @@ fun Resultados(resultado: String, modifier: Modifier = Modifier,onNuevaPartida: 
     }
 }
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)@Composable
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
 fun Historial(modifier: Modifier = Modifier, viewModel: JuegoViewModel, onSeleccionarPartida: (PartidaEntity) -> Unit, onVolver: () -> Unit){
 
     val partidas = viewModel.historialPartidas
@@ -1880,7 +1882,7 @@ fun DialogPreferencias(mostrar: Boolean, alias: String, onAliasChange: (String) 
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Button(enabled = alias.trim().isNotEmpty(),onClick = onCerrar) { Text(stringResource(R.string.cancelar)) }
+                    Button(onClick = onCerrar) { Text(stringResource(R.string.cancelar)) }
                     Spacer(modifier = Modifier.width(10.dp))
                     Button(onClick = onGuardar) { Text(stringResource(R.string.guardar)) }
                 }
